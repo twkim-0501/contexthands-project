@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="ContextHands completes wrist and finger motion from observed body motion and timed descriptions of each hand.">
+<title>ContextHands: Completing Hand Motion with Learned Context and Joint-Specific Body Kinematics</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header><nav aria-label="Sections"><a href="#method">Method</a><a href="#results">Results</a><a href="#examples">Examples</a><a href="#resources">Resources</a></nav></header>
+<main>
+<section class="hero" aria-labelledby="project-title">
+<h1 id="project-title"><strong>ContextHands</strong><span>Completing Hand Motion with Learned Context and Joint-Specific Body Kinematics</span></h1>
+<p>A stirring hand circles a mug. A cutting hand closes around a handle. The body tells us where a wrist goes, while timed descriptions tell us what each hand is doing. ContextHands combines the two to complete wrist and finger motion.</p>
+</section>
+<section id="method"><h2>How it works</h2>
+<div class="flow">
+<article><p class="role">Action context</p><h3>Hand Context Encoder</h3><p>Reads the body sequence and descriptions assigned to each hand and time interval. During training, a hand-motion prediction task helps connect those descriptions to articulation.</p></article>
+<article><p class="role">Body motion</p><h3>Joint-Query Kinematic Encoder</h3><p>Each wrist and finger joint draws on body joints and anatomical parts at three temporal scales to find the motion cues it needs.</p></article>
+<article><p class="role">Generated hands</p><h3>Hand Diffusion Generator</h3><p>Uses both signals to generate wrist orientations and finger rotations. The observed body sequence supplies the wrist positions.</p></article>
+</div></section>
+<section id="results"><h2>OakInk2 results</h2>
+<p>The evaluation uses 1,709 held-out clips from 157 recordings, with 16 generations per input. ContextHands achieves the following point estimates in the paper’s main comparison.</p>
+<dl class="metrics"><div><dt>Mean joint-position error</dt><dd>30.711 <small>mm</small></dd></div><div><dt>Best-of-16 position error</dt><dd>22.809 <small>mm</small></dd></div><div><dt>Wrist rotation error</dt><dd>16.93<small>°</small></dd></div></dl>
+<p>The first metric averages over generated samples. The second uses the closest complete sample for each clip. The model uses the full body sequence, including future frames, and hand-specific descriptions at inference.</p></section>
+<section id="examples"><h2>Motion examples</h2><p>The selected examples show a hand stirring with a rod and a hand cutting an apple. Each pairs the body input with the recorded hands and the ContextHands prediction. Objects appear in the reference view. The model has no explicit object geometry or contact constraint.</p>
+<p class="status">Figures and comparison videos <span>Coming soon</span></p></section>
+<section id="resources"><h2>Project resources</h2>
+<dl><div><dt>Paper</dt><dd>Coming soon</dd></div><div><dt>Code</dt><dd>Coming soon</dd></div><div><dt>Pretrained weights</dt><dd>Coming soon</dd></div></dl>
+<p>Code preparation covers input conversion, inference, visualization and evaluation. Public downloads for the checkpoint, body statistics and evaluation encoder are pending.</p>
+</section>
+</main><footer><span>ContextHands</span><a href="https://github.com/twkim-0501/ContextHands">Private repository · collaborator access</a></footer>
+</body></html>
