@@ -4,7 +4,7 @@
 <meta name="robots" content="noindex,nofollow,noarchive"><meta name="referrer" content="no-referrer">
 <title>ContextHands: Completing Hand Motion with Learned Context and Joint-Specific Body Kinematics</title>
 <meta name="description" content="ContextHands completes hand motion from an observed body sequence and text describing what each hand does and when.">
-<link rel="icon" href="data:,"><link rel="stylesheet" href="style.css?v=0cbbb58d158f"><script src="page.js?v=9e388e5a6b5b" defer></script>
+<link rel="icon" href="data:,"><link rel="stylesheet" href="style.css?v=3501ec6510d5"><script src="page.js?v=8d59f0a72da6" defer></script>
 </head><body><a class="skip" href="#abstract">Skip to abstract</a><main>
 <header id="top"><h1><strong>ContextHands</strong><span class="sr">: </span><span class="subtitle">Completing Hand Motion with Learned Context<br class="desktop-break"> and Joint-Specific Body Kinematics</span></h1>
 <p class="authors"><span>Taewoo Kim</span> <span>Seunghun Koh</span> <span>Hyosup Shin</span> <span>Sungho Jo<sup>†</sup></span></p>
@@ -65,13 +65,43 @@
 <a class="plate" href="assets/figure-3.webp" data-figure="3" aria-label="Enlarge Figure 3"><img src="assets/figure-3.webp" width="3301" height="3023" loading="lazy" alt="Four OakInk2 examples compare the reference and six methods across three instants with wrist alignment, ground-truth overlays and object views."></a>
 <figcaption><span><b>Figure 3.</b> Grasping a box lid, cutting an apple, placing a plate and stirring with a rod. Poses run from top to bottom in time. Wrists are aligned to the reference, and translucent overlays show differences in finger articulation. Object views illustrate grasp shapes.</span><a href="assets/figure-3.webp" data-figure="3" aria-label="Enlarge Figure 3">Enlarge</a></figcaption></figure>
 </section></main>
-<footer><details id="citation"><summary>Citation</summary><pre><code>@unpublished{kim_contexthands,
+<footer>
+<div class="backmatter">
+<section id="citation" aria-labelledby="bibtex-title">
+<div class="section-heading">
+<h2 id="bibtex-title">BibTeX</h2>
+<button id="copy-citation" type="button" hidden>Copy BibTeX</button>
+</div>
+<p id="copy-status" class="sr" role="status"></p>
+<pre><code id="bibtex">@unpublished{kim_contexthands,
   title  = {{ContextHands}: Completing Hand Motion with Learned Context and Joint-Specific Body Kinematics},
   author = {Kim, Taewoo and Koh, Seunghun and Shin, Hyosup and Jo, Sungho},
   note   = {Manuscript}
-}</code></pre></details><details id="credits"><summary>Credits and licenses</summary><div class="credits">
+}</code></pre>
+</section>
+<section id="references" aria-labelledby="references-title">
+<h2 id="references-title">References</h2>
+<ul class="references">
+<li>Zhan et al. (2024). <a href="https://openaccess.thecvf.com/content/CVPR2024/html/Zhan_OAKINK2_A_Dataset_of_Bimanual_Hands-Object_Manipulation_in_Complex_Task_CVPR_2024_paper.html">OakInk2: A Dataset of Bimanual Hands-Object Manipulation in Complex Task Completion</a>.</li>
+<li>Zhang et al. (2024). <a href="https://openaccess.thecvf.com/content/CVPR2024/html/Zhang_BOTH2Hands_Inferring_3D_Hands_from_Both_Text_Prompts_and_Body_CVPR_2024_paper.html">BOTH2Hands: Inferring 3D Hands from Both Text Prompts and Body Dynamics</a>.</li>
+<li>Tevet et al. (2023). <a href="https://arxiv.org/abs/2209.14916">Human Motion Diffusion Model</a> (MDM).</li>
+<li>Zhang et al. (2023). <a href="https://openaccess.thecvf.com/content/CVPR2023/html/Zhang_Generating_Human_Motion_From_Textual_Descriptions_With_Discrete_Representations_CVPR_2023_paper.html">Generating Human Motion from Textual Descriptions with Discrete Representations</a> (T2M-GPT).</li>
+<li>Chen et al. (2023). <a href="https://openaccess.thecvf.com/content/CVPR2023/html/Chen_Executing_Your_Commands_via_Motion_Diffusion_in_Latent_Space_CVPR_2023_paper.html">Executing Your Commands via Motion Diffusion in Latent Space</a> (MLD).</li>
+<li>Zhang et al. (2026). <a href="https://arxiv.org/abs/2603.28766">HandX: Scaling Bimanual Motion and Interaction Generation</a>.</li>
+<li>Pavlakos et al. (2019). <a href="https://openaccess.thecvf.com/content_CVPR_2019/html/Pavlakos_Expressive_Body_Capture_3D_Hands_Face_and_Body_From_a_CVPR_2019_paper.html">Expressive Body Capture: 3D Hands, Face, and Body from a Single Image</a> (SMPL-X).</li>
+</ul>
+</section>
+<section id="acknowledgements" aria-labelledby="acknowledgements-title">
+<h2 id="acknowledgements-title">Acknowledgements</h2>
+<p>We thank the <a href="https://github.com/Godheritage/BOTH2Hands">BOTH2Hands authors</a> for sharing their implementation and the OakInk2 team for making the dataset available.</p>
+<div id="credits" class="credits">
+<h3>Media credits and licenses</h3>
 <p>Motion, object and text annotations come from <a href="https://oakink.net/v2/">OakInk2</a> (Zhan et al., 2024). We selected sequences and rendered and colored the body, hands and objects. These adaptations of the <a href="https://huggingface.co/datasets/kelvin34501/OakInk-v2">dataset</a> are shared under <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="license">CC BY-SA 4.0</a>.</p>
 <p>SMPL-X Body, courtesy of the Max Planck Institute for Intelligent Systems, was posed and rendered for these visualizations. <a href="https://smpl-x.is.tue.mpg.de/">Pavlakos et al. (2019)</a> · <a href="https://smpl-x.is.tue.mpg.de/bodylicense.html">SMPL-X Body terms</a> · <a href="https://creativecommons.org/licenses/by/4.0/" rel="license">CC BY 4.0</a>.</p>
-</div></details><a href="#top">Back to top</a></footer>
+</div>
+</section>
+<div class="footer-bar"><small>Site text and design © 2026 ContextHands authors</small><a href="#top">Back to top ↑</a></div>
+</div>
+</footer>
 <dialog id="reader" aria-labelledby="reader-title"><div class="reader-head"><strong id="reader-title">Figure</strong><button id="zoom" type="button" aria-pressed="false">Zoom in</button><button id="close" type="button">Close</button></div><div class="pan" tabindex="0" aria-label="Pan the enlarged figure"><img id="detail" alt=""></div><p id="figure-detail-note"></p></dialog>
 </body></html>

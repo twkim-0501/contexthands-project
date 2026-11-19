@@ -169,6 +169,26 @@ function revealFragment() {
 window.addEventListener('hashchange', revealFragment);
 revealFragment();
 
+const copyCitation = byId('copy-citation');
+if (navigator.clipboard) {
+  copyCitation.hidden = false;
+  copyCitation.addEventListener('click', async () => {
+    const bibtex = byId('bibtex');
+    try {
+      await navigator.clipboard.writeText(bibtex.textContent);
+      copyCitation.textContent = 'Copied';
+      byId('copy-status').textContent = 'BibTeX copied to clipboard.';
+    } catch {
+      const range = document.createRange();
+      range.selectNodeContents(bibtex);
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+      byId('copy-status').textContent = 'BibTeX selected for manual copying.';
+    }
+  });
+}
+
 const reader = byId('reader');
 const detail = byId('detail');
 const pane = reader.querySelector('.pan');

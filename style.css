@@ -75,7 +75,7 @@ summary small { font-size: .85rem; font-weight: normal; color: var(--muted); mar
 .frames figcaption { font-size: .9rem; font-weight: 550; color: var(--ink); }
 .frames figure:nth-child(2) figcaption { color: var(--blue); font-weight: 700; }
 .transport { display: flex; align-items: center; gap: .7rem; max-width: 31rem; margin: .9rem auto; }
-.transport button, .reader-head button { border: 1px solid #c5ccd1; background: white; border-radius: 5px; padding: .28em .8em; color: var(--ink); }
+.transport button, .reader-head button, #copy-citation { border: 1px solid #c5ccd1; background: white; border-radius: 5px; padding: .28em .8em; color: var(--ink); }
 .transport input { flex: 1; min-width: 0; accent-color: var(--blue); }
 .reading { color: var(--muted); font-size: .93rem; }
 .table-scroll { overflow-x: auto; margin: .6rem 0; }
@@ -85,12 +85,21 @@ td, th { padding: .42rem; border-bottom: 1px solid var(--rule); text-align: righ
 th:first-child { text-align: left; }
 th small { display: block; font-weight: 450; color: var(--muted); }
 .ours { background: #f0f5f8; }
-footer { margin-block: 3.25rem 2.25rem; border-top: 1px solid var(--rule); padding-top: 1rem; display: flex; flex-wrap: wrap; align-items: baseline; gap: .5rem 1.6rem; font-size: .9rem; }
-footer details[open] { flex-basis: 100%; }
-footer>a { margin-left: auto; }
-footer pre { padding: 1rem; background: #f5f7f8; white-space: pre-wrap; overflow-wrap: anywhere; }
-.credits { max-width: 52rem; }
+footer { margin-block: clamp(3rem, 6vw, 5rem) 1.75rem; border-top: 1px solid var(--rule); padding-top: 2rem; }
+.backmatter { max-width: 46rem; margin-inline: auto; font-size: .95rem; }
+.backmatter section + section { margin-top: 2rem; }
+.backmatter h2 { margin-bottom: .75rem; text-align: left; font-size: 1.55rem; font-weight: 650; letter-spacing: -.025em; }
+.section-heading { display: flex; align-items: center; justify-content: space-between; gap: .75rem; margin-bottom: .75rem; }
+.backmatter .section-heading h2 { margin-bottom: 0; }
+#copy-citation { flex-shrink: 0; font-size: .85rem; }
+.backmatter pre { padding: 1rem; border: 1px solid var(--rule); border-radius: 6px; background: #f5f7f8; font-size: .86rem; white-space: pre-wrap; overflow-wrap: anywhere; user-select: all; }
+.references { margin: 0; padding-left: 1.2em; }
+.references li + li { margin-top: .34rem; }
+.credits { margin-top: .95rem; font-size: .9rem; color: var(--muted); }
+.credits h3 { margin-bottom: .35rem; font-size: .95rem; }
 .credits p+p { margin-top: .5rem; }
+.footer-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: .35rem 1rem; margin-top: 1.65rem; border-top: 1px solid var(--rule); padding-top: .8rem; color: var(--muted); font-size: .85rem; }
+.footer-bar small { font-size: inherit; }
 dialog { padding: 0; width: min(80rem,96vw); max-width: 96vw; max-height: 95dvh; overflow: hidden; border: 1px solid var(--rule); border-radius: 8px; }
 dialog::backdrop { background: rgb(19 28 35 / 70%); }
 .reader-head { display: flex; align-items: center; gap: .5rem; padding: .55rem .75rem; border-bottom: 1px solid var(--rule); font-size: .95rem; }
