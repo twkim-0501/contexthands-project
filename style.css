@@ -25,7 +25,7 @@ a { color: var(--blue); text-underline-offset: .17em; }
 .skip:focus { position: absolute; background: white; padding: .4rem; }
 header { padding: clamp(2.5rem, 5vw, 4.25rem) 0 clamp(1.25rem, 2.8vw, 2.1rem); text-align: center; }
 h1 { font-weight: 600; line-height: 1.12; text-wrap: balance; letter-spacing: -.043em; }
-h1 strong { display: table; margin: auto; font-size: clamp(3rem, 5.4vw, 4.25rem); font-weight: 730; line-height: 1.03; letter-spacing: -.059em; }
+h1 strong { display: table; margin: auto; padding-inline: .08em; font-size: clamp(3rem, 5.4vw, 4.25rem); font-weight: 730; line-height: 1.03; letter-spacing: -.059em; }
 @supports (background-clip: text) {
   h1 strong { background: linear-gradient(105deg,#a18742 6%,#548478 50%,#39789f 94%); background-clip: text; color: transparent; }
 }
