@@ -1,60 +1,38 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow,noarchive"><meta name="referrer" content="no-referrer">
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive"><meta name="referrer" content="no-referrer">
 <title>ContextHands: Completing Hand Motion with Learned Context and Joint-Specific Body Kinematics</title>
-<meta content="ContextHands completes hand motion from an observed body sequence and text describing what each hand does and when." name="description"/><link rel="icon" href="data:,"><link rel="stylesheet" href="style.css?v=23b5c6cdbfaa"><script defer src="page.js?v=a87b228e6feb"></script></head>
-<body><a class="skip" href="#abstract">Skip to abstract</a>
-<main><header class="masthead" id="top"><h1><strong>ContextHands</strong><span class="sr">: </span><span class="subtitle"><span>Completing Hand Motion with <span class="keep">Learned Context</span></span> <span>and <span class="keep">Joint-Specific</span> Body Kinematics</span></span></h1>
-<p class="affiliations">Author and affiliation details coming soon.</p>
-<div class="resources"><a class="watch" href="#video"><span aria-hidden="true">▶</span> Video</a><a href="#comparisons">Results</a>
-<span class="availability">Paper · Code · Weights <small>Coming soon</small></span></div></header>
+<meta name="description" content="ContextHands completes hand motion from an observed body sequence and text describing what each hand does and when.">
+<link rel="icon" href="data:,"><link rel="stylesheet" href="style.css?v=d604d1d64900"><script src="page.js?v=e5937892ca86" defer></script>
+</head><body><a class="skip" href="#abstract">Skip to abstract</a><main>
+<header id="top"><h1><strong>ContextHands</strong><span class="sr">: </span><span class="subtitle">Completing Hand Motion with Learned Context<br class="desktop-break"> and Joint-Specific Body Kinematics</span></h1>
+<p class="authors"><span>Taewoo Kim</span> <span>Seunghun Koh</span> <span>Hyosup Shin</span> <span>Sungho Jo<sup>†</sup></span></p>
+<p class="affiliation">Neuro-Machine Augmented Intelligence Lab (NMAIL), KAIST</p><p class="corresponding"><sup>†</sup> Corresponding author</p>
+<div class="resources" role="group" aria-label="Project resources" aria-describedby="availability"><span>Paper</span><span>Supplementary</span><span>Code</span><span>Weights</span></div>
+<p id="availability">Coming soon</p></header>
 <figure class="paper-figure" id="figure-1">
-      <button type="button" aria-label="Enlarge Figure 1. Hand-motion completion" class="figure-open" data-figure="1"><img src="assets/figure-1.webp" width="3100" height="1573" alt="Three columns show stirring, cutting an apple, and grasping a lid. Each column moves from the recorded scene to the input body and text, then to three generated hand poses." fetchpriority="high"></button>
-      <figcaption><p><strong>Figure 1.</strong> From body motion and timed descriptions, ContextHands generates hand poses for stirring, cutting an apple, and grasping a lid. Objects beside the final poses are shown for illustration.</p><button type="button" data-figure="1" class="enlarge" aria-label="Enlarge Figure 1">Enlarge <span aria-hidden="true">↗</span></button></figcaption>
-      </figure>
-<section class="prose section" id="abstract">
-<h2>Abstract</h2>
+<a class="plate" href="assets/figure-1.webp" data-figure="1" aria-label="Enlarge Figure 1"><img src="assets/figure-1.webp" width="3100" height="1573" fetchpriority="high" alt="Recorded scenes, body motion, timed instructions and generated hand poses for stirring, cutting and grasping a lid."></a>
+<figcaption><span><b>Figure 1.</b> ContextHands completes both hands from body motion and timed descriptions. Objects beside the final poses illustrate the action.</span><a href="assets/figure-1.webp" data-figure="1" aria-label="Enlarge Figure 1">Enlarge</a></figcaption></figure>
+<section class="section prose" id="abstract"><h2>Abstract</h2>
 <p>Detailed hand motion contributes to the realism and expressiveness of generated human motion. Completing these details from body motion and language requires connecting the context of an action to the articulation of the hands. We introduce <strong>ContextHands</strong>, which completes hand motion from an observed body sequence and text descriptions assigned to hands and time intervals.</p>
 <p>Our approach learns probabilistic hand features from the descriptions and body motion, using auxiliary hand prediction to connect these features to hand articulation. A body encoder preserves joint and body-part features across multiple temporal scales, allowing each hand joint to query these features for joint-specific body information. The diffusion generator combines this joint-specific body information with the learned hand context. Both encoders and the generator are trained jointly, so the final generation objective also shapes the context features.</p>
 <p>Experiments on the OakInk2 dataset show that ContextHands generates more accurate hand motion and achieves lower Fréchet Hand Distance than existing hand-motion and general human-motion generation methods adapted to the task. In qualitative examples of grasping and tool use, ContextHands more closely reproduces the detailed hand poses in the reference motion.</p>
 </section>
-<section id="method" class="wide section"><h2>Method</h2><figure class="paper-figure" id="figure-2">
-      <button type="button" aria-label="Enlarge Figure 2. Overview of ContextHands" class="figure-open" data-figure="2"><img src="assets/figure-2.webp" width="3100" height="1916" alt="The Hand Context Encoder and Joint-Query Kinematic Encoder condition a diffusion generator. The diagram separates the training posterior and inference prior and shows the resulting hand motion." loading="lazy"></button>
-      <figcaption><p><strong>Figure 2.</strong> The Hand Context Encoder and Joint-Query Kinematic Encoder condition the Hand Diffusion Generator. Training processes prior and posterior features in separate passes. Inference uses the prior.</p><button type="button" data-figure="2" class="enlarge" aria-label="Enlarge Figure 2">Enlarge <span aria-hidden="true">↗</span></button></figcaption>
-      </figure>
-<div class="method-parts">
-<div><h3>Hand Context Encoder</h3><p>Learns what each hand is doing from its descriptions and body motion. Predicting hand motion during training ties these features to articulation.</p></div>
-<div><h3>Joint-Query Kinematic Encoder</h3><p>Each wrist and finger joint queries body joints and anatomical parts at three temporal scales for cues to its own motion.</p></div>
-<div><h3>Hand Diffusion Generator</h3><p>Combines both encoders’ signals to generate wrist and finger rotations while the observed body motion and wrist positions stay fixed.</p></div>
-</div></section>
-<section class="wide section" id="comparisons">
-<h2>Qualitative results</h2><div class="paired-examples"><figure class="example"><figcaption>Stirring with a rod</figcaption>
-<div class="panel-key"><span>Body input</span><span>Reference</span><span>ContextHands</span></div>
-<video aria-label="Stirring with a rod" controls="" muted="" playsinline="" poster="assets/hero-x16.webp" preload="metadata" src="assets/hero-x16.mp4"></video></figure><figure class="example"><figcaption>Cutting an apple</figcaption>
-<div class="panel-key"><span>Body input</span><span>Reference</span><span>ContextHands</span></div>
-<video aria-label="Cutting an apple" controls="" muted="" playsinline="" poster="assets/hero-s19.webp" preload="metadata" src="assets/hero-s19.mp4"></video></figure></div><p class="figure-note">The two clips use generation seed 501 and show objects only with the recorded hands. Figure 1 uses seeds 503, 505, and 508 for stirring, cutting, and grasping the lid, respectively. Both the figure and the clips use the 30k-update ContextHands checkpoint.</p><h3 class="subsection">Reference and five baselines</h3>
-<p class="prose">Play or scrub an action to compare the recorded hand, ContextHands, and five baselines at the same instant. The number below each prediction is its mean rotation error across the 15 finger joints over the displayed interval.</p>
-<div aria-label="Motion examples" class="examples" role="group">
-<button aria-pressed="true" data-case="s19">Cutting an apple</button>
-<button aria-pressed="false" data-case="w01">Unplugging a laptop</button>
-<button aria-pressed="false" data-case="t01">Pouring from a mug</button>
-</div>
-<div class="comparison" id="comparison-player"></div>
-<noscript><p><a href="assets/s19.mp4">Play the full apple-cutting comparison</a>.</p></noscript>
-
-<p class="prose protocol">All six methods use generation seed 501 in these videos. BOTH2Hands uses its 34k-update checkpoint here and its 32k-update checkpoint in the paper’s Figure 3.</p><div class="wide section" id="limitations">
-<h3>Failure case</h3>
-<p class="prose">ContextHands needs the full body sequence, including future frames, and descriptions assigned to hands and time intervals. Evaluation covers annotated object manipulation in OakInk2. The model has no explicit object geometry or contact constraint.</p>
-<div class="comparison" id="failure-player"></div>
-<noscript><p><a href="assets/f01.mp4">Play the full failure comparison</a>.</p></noscript>
-</div><div class="wide section" id="video">
-<h3>Motion overview</h3>
-<figure class="film"><video aria-describedby="film-caption" controls="" id="overview" playsinline="" poster="assets/overview.webp" preload="none" src="assets/overview.mp4">Your browser does not support MP4 playback.</video>
-<figcaption id="film-caption">Generated hands during object manipulation on OakInk2. In paired views, purple identifies the left hand and blue the right. In the seven-way comparisons, color identifies each method as in Figure 3. Only the reference shows recorded objects.</figcaption>
-</figure>
-</div></section>
-<section class="wide section" id="quantitative">
-<h2>Quantitative Results</h2>
-<p class="prose">On 1,709 OakInk2 test clips from 157 recordings, ContextHands averages <strong>30.711 mm</strong> joint-position error across samples, compared with <strong>33.094 mm</strong> for MDM. FHD is also lower in the table, though the paired 95% interval for that difference includes zero.</p>
+<section class="section" id="method"><h2>Method</h2>
+<figure class="paper-figure" id="figure-2">
+<a class="plate" href="assets/figure-2.webp" data-figure="2" aria-label="Enlarge Figure 2"><img src="assets/figure-2.webp" width="3100" height="1916" loading="lazy" alt="Hand Context Encoder, Joint-Query Kinematic Encoder and Hand Diffusion Generator, showing training and inference."></a>
+<figcaption><span><b>Figure 2.</b> The generator combines the learned context for each hand with joint-specific cues from body motion to generate wrist and finger rotations.</span><a href="assets/figure-2.webp" data-figure="2" aria-label="Enlarge Figure 2">Enlarge</a></figcaption></figure>
+</section>
+<section class="section" id="motion-examples"><h2>Motion examples</h2>
+<div class="action-choices" role="group" aria-label="Choose a paired motion example">
+<button type="button" data-pair="x16" aria-pressed="true">Stirring</button><button type="button" data-pair="s19" aria-pressed="false">Cutting</button></div>
+<figure class="pair"><div class="panel-key"><span>Body input</span><span>Reference</span><span>ContextHands</span></div>
+<video id="pair-movie" controls muted playsinline preload="metadata" src="assets/hero-x16.mp4" poster="assets/hero-x16.webp" aria-labelledby="pair-caption"></video>
+<figcaption id="pair-caption">“Stir in the green mug with the rod.”</figcaption></figure>
+<details class="line-details" id="video"><summary>Watch the motion overview <small>58 s</small></summary><video id="overview" controls playsinline preload="none" poster="assets/overview.webp" src="assets/overview.mp4" aria-label="Motion overview"></video></details>
+</section>
+<details class="line-details" id="quantitative"><summary>Quantitative results on OakInk2</summary>
 <div aria-label="OakInk2 results table, scroll horizontally if needed" class="table-scroll" role="region" tabindex="0">
 <table><caption>OakInk2 test set · 16 generations per input · Table 1 point estimates</caption>
 <thead><tr><th scope="col">Method</th><th scope="col">MinMPJPE ↓<small>mm, best of 16</small></th><th scope="col">AvgMPJPE ↓<small>mm</small></th><th scope="col">Wrist error ↓<small>degrees</small></th><th scope="col">FHD ↓</th><th scope="col">Diversity →</th><th scope="col">MModality ↑</th></tr></thead>
@@ -73,11 +51,25 @@
 <p>MPJPE measures position error across 42 hand points including the given wrist positions. MinMPJPE selects the best complete sequence for each clip. AvgMPJPE averages all samples. Wrist error measures the geodesic angle between reference and predicted orientations. FHD compares the distributions of generated and recorded motion features over 8,042 windows from 1,633 clips. Diversity measures variation across windows, with the ground-truth value as reference. Multimodality measures variation across generations of the same input.</p>
 <p>With hand and time instead written into MDM’s captions, its AvgMPJPE and FHD difference intervals both include zero.</p>
 </details>
-</section>
-<section id="citation" class="prose section"><h2>Citation and resources</h2><p>Citation details will be available with the paper. The public code and pretrained weights are coming soon.</p></section></main>
-<footer><div class="credits">
-<p>Motion, object and text annotations come from <a href="https://oakink.net/v2/">OakInk2</a> (Zhan et al., 2024). We selected sequences and rendered and colored the body, hands and objects. These adaptations of the <a href="https://huggingface.co/datasets/kelvin34501/OakInk-v2">dataset</a> are shared under <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.</p>
-<p>SMPL-X Body, courtesy of the Max Planck Institute for Intelligent Systems, was posed and rendered for these visualizations. <a href="https://smpl-x.is.tue.mpg.de/">Pavlakos et al. (2019)</a> · <a href="https://smpl-x.is.tue.mpg.de/bodylicense.html">SMPL-X Body terms</a> · <a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</p>
-</div><a href="#top">Back to top ↑</a></footer>
-<dialog id="reader" aria-labelledby="reader-title"><div class="reader-head"><strong id="reader-title">Figure</strong><button type="button" id="zoom" aria-pressed="false">Zoom in</button><button type="button" id="close">Close</button></div>
-<div class="pan" tabindex="0" aria-label="Scrollable enlarged figure"><img id="detail" alt=""></div><p id="figure-detail-note"></p></dialog></body></html>
+</details>
+<section class="section" id="comparisons"><h2>Qualitative results</h2>
+<div class="action-choices" role="group" aria-label="Choose a seven-way comparison">
+<button type="button" aria-pressed="true" data-case="s19">Cutting</button><button type="button" aria-pressed="false" data-case="w01">Unplugging</button><button type="button" aria-pressed="false" data-case="t01">Pouring</button><button type="button" aria-pressed="false" data-case="f01" id="limitations">Failure case</button></div>
+<div id="comparison-player" class="comparison"></div><noscript><a href="assets/s19.mp4">Play the full comparison</a></noscript>
+<details class="line-details" id="settings"><summary>Comparison settings</summary>
+<p>Only the reference shows recorded objects in the videos. All six methods use generation seed 501. ContextHands uses its 30k-update checkpoint. Figure 1 uses seeds 503, 505 and 508 for stirring, cutting and grasping a lid. BOTH2Hands uses its 34k-update checkpoint in the videos and its 32k-update checkpoint in Figure 3.</p>
+<p>Scores are mean rotation errors across the 15 finger joints over the displayed interval. ContextHands uses the full body sequence and timed descriptions, with no explicit object geometry or contact constraint.</p></details>
+<figure class="paper-figure" id="figure-3">
+<a class="plate" href="assets/figure-3.webp" data-figure="3" aria-label="Enlarge Figure 3"><img src="assets/figure-3.webp" width="3301" height="3023" loading="lazy" alt="Four OakInk2 examples compare the reference and six methods across three instants with wrist alignment, ground-truth overlays and object views."></a>
+<figcaption><span><b>Figure 3.</b> Grasping a box lid, cutting an apple, placing a plate and stirring with a rod. Poses run from top to bottom in time. Wrists are aligned to the reference, and translucent overlays show differences in finger articulation. Object views illustrate grasp shapes.</span><a href="assets/figure-3.webp" data-figure="3" aria-label="Enlarge Figure 3">Enlarge</a></figcaption></figure>
+</section></main>
+<footer><details id="citation"><summary>Citation</summary><pre><code>@unpublished{kim_contexthands,
+  title  = {{ContextHands}: Completing Hand Motion with Learned Context and Joint-Specific Body Kinematics},
+  author = {Kim, Taewoo and Koh, Seunghun and Shin, Hyosup and Jo, Sungho},
+  note   = {Manuscript}
+}</code></pre></details><details id="credits"><summary>Credits and licenses</summary><div class="credits">
+<p>Motion, object and text annotations come from <a href="https://oakink.net/v2/">OakInk2</a> (Zhan et al., 2024). We selected sequences and rendered and colored the body, hands and objects. These adaptations of the <a href="https://huggingface.co/datasets/kelvin34501/OakInk-v2">dataset</a> are shared under <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="license">CC BY-SA 4.0</a>.</p>
+<p>SMPL-X Body, courtesy of the Max Planck Institute for Intelligent Systems, was posed and rendered for these visualizations. <a href="https://smpl-x.is.tue.mpg.de/">Pavlakos et al. (2019)</a> · <a href="https://smpl-x.is.tue.mpg.de/bodylicense.html">SMPL-X Body terms</a> · <a href="https://creativecommons.org/licenses/by/4.0/" rel="license">CC BY 4.0</a>.</p>
+</div></details><a href="#top">Back to top</a></footer>
+<dialog id="reader" aria-labelledby="reader-title"><div class="reader-head"><strong id="reader-title">Figure</strong><button id="zoom" type="button" aria-pressed="false">Zoom in</button><button id="close" type="button">Close</button></div><div class="pan" tabindex="0" aria-label="Pan the enlarged figure"><img id="detail" alt=""></div><p id="figure-detail-note"></p></dialog>
+</body></html>

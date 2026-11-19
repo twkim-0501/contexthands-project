@@ -116,42 +116,87 @@ function showComparison(container, key) {
   });
   video.src = asset(key + '.mp4');
 }
-showComparison(byId('comparison-player'), 's19');
-showComparison(byId('failure-player'), 'f01');
-document.querySelectorAll('[data-case]').forEach(button => {
-  button.addEventListener('click', () => {
-    document.querySelectorAll('[data-case]').forEach(b => b.setAttribute('aria-pressed', b === button));
-    showComparison(byId('comparison-player'), button.dataset.case);
+const comparison = byId('comparison-player');
+function chooseCase(key) {
+  document.querySelectorAll('[data-case]').forEach(button => {
+    button.setAttribute('aria-pressed', String(button.dataset.case === key));
   });
+  showComparison(comparison, key);
+}
+chooseCase(location.hash === '#limitations' ? 'f01' : 's19');
+document.querySelectorAll('[data-case]').forEach(button => {
+  button.addEventListener('click', () => chooseCase(button.dataset.case));
 });
 
-document.querySelectorAll('.example video').forEach(video => video.addEventListener('play', () => pauseOthers(video)));
+const pair = byId('pair-movie');
+const pairedCaptions = {
+  x16: '“Stir in the green mug with the rod.”',
+  s19: '“Cut the apple with the orange cleaver knife.”'
+};
+document.querySelectorAll('[data-pair]').forEach(button => {
+  button.addEventListener('click', () => {
+    if (button.getAttribute('aria-pressed') === 'true') return;
+    const key = button.dataset.pair;
+    pair.pause();
+    pair.poster = asset('hero-' + key + '.webp');
+    pair.src = asset('hero-' + key + '.mp4');
+    byId('pair-caption').textContent = pairedCaptions[key];
+    document.querySelectorAll('[data-pair]').forEach(option => {
+      option.setAttribute('aria-pressed', String(option === button));
+    });
+  });
+});
+pair.addEventListener('play', () => pauseOthers(pair));
+byId('video').addEventListener('toggle', () => {
+  if (!byId('video').open) byId('overview').pause();
+});
+function revealFragment() {
+  const target = byId(location.hash.slice(1));
+  if (target && target.tagName === 'DETAILS') {
+    target.open = true;
+    requestAnimationFrame(() => target.scrollIntoView());
+  } else if (target && target.id === 'limitations' && target.getAttribute('aria-pressed') !== 'true') {
+    chooseCase('f01');
+  }
+}
+window.addEventListener('hashchange', revealFragment);
+revealFragment();
 
 const reader = byId('reader');
 const detail = byId('detail');
 const pane = reader.querySelector('.pan');
-const toggle = byId('zoom');
+const zoom = byId('zoom');
+const descriptions = {
+  '1': ['Hand-motion completion', 'The stirring and cutting close-ups use the reference wrist orientation. The lid close-up preserves relative predicted wrist rotations. Objects illustrate the action.'],
+  '2': ['Method', 'At inference, the prior uses body motion and timed descriptions. During training, the posterior also observes the target hand motion.'],
+  '3': ['Qualitative comparison', 'Within each example, all methods use the same test clip, generation seed and frames. L and R identify the left and right hands. All methods share cameras and scale.']
+};
+let opener;
 function magnify(on) {
   pane.classList.toggle('magnified', on);
-  toggle.setAttribute('aria-pressed', String(on));
-  toggle.textContent = on ? 'Fit figure' : 'Zoom in';
-  pane.scrollTo(0, 0);
+  zoom.setAttribute('aria-pressed', String(on));
+  zoom.textContent = on ? 'Fit figure' : 'Zoom in';
+  pane.scrollTo(0,0);
 }
-document.querySelectorAll('[data-figure]').forEach(button => {
-  button.addEventListener('click', () => {
-    const number = button.dataset.figure;
+document.querySelectorAll('[data-figure]').forEach(link => {
+  link.addEventListener('click', event => {
+    if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || typeof reader.showModal !== 'function') return;
+    event.preventDefault();
+    const number = link.dataset.figure;
     const original = byId('figure-' + number).querySelector('img');
-    byId('reader-title').textContent = number === '1' ? 'Figure 1 · Hand-motion completion' : 'Figure 2 · Method';
+    const [title, note] = descriptions[number];
+    byId('reader-title').textContent = 'Figure ' + number + ' · ' + title;
+    byId('figure-detail-note').textContent = note;
     detail.src = original.currentSrc || original.src;
     detail.alt = original.alt;
-    byId('figure-detail-note').textContent = number === '1'
-      ? 'Each example displays one of the supplied instructions. For stirring and cutting, the close-ups use the reference wrist orientation. The lid preserves relative predicted wrist rotations. Object placement only illustrates the action.'
-      : 'During training, the posterior also observes the target hand motion. At inference, the prior uses the observed body motion and assigned descriptions.';
+    pane.style.setProperty('--image-width', original.width ? original.getAttribute('width') + 'px' : '2100px');
+    opener = link;
     reader.showModal();
-    magnify(matchMedia('(max-width: 640px)').matches);
-    byId('close').focus();
+    magnify(false);
+    zoom.focus();
   });
 });
-toggle.addEventListener('click', () => magnify(!pane.classList.contains('magnified')));
+zoom.addEventListener('click', () => magnify(!pane.classList.contains('magnified')));
 byId('close').addEventListener('click', () => reader.close());
 reader.addEventListener('click', event => { if (event.target === reader) reader.close(); });
+reader.addEventListener('close', () => { if (opener) opener.focus({preventScroll:true}); });
