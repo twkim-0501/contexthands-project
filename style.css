@@ -93,8 +93,6 @@ footer { margin-block: clamp(3rem, 6vw, 5rem) 1.75rem; border-top: 1px solid var
 .backmatter .section-heading h2 { margin-bottom: 0; }
 #copy-citation { flex-shrink: 0; font-size: .85rem; }
 .backmatter pre { padding: 1rem; border: 1px solid var(--rule); border-radius: 6px; background: #f5f7f8; font-size: .86rem; white-space: pre-wrap; overflow-wrap: anywhere; user-select: all; }
-.references { margin: 0; padding-left: 1.2em; }
-.references li + li { margin-top: .34rem; }
 .credits { margin-top: .95rem; font-size: .9rem; color: var(--muted); }
 .credits h3 { margin-bottom: .35rem; font-size: .95rem; }
 .credits p+p { margin-top: .5rem; }
