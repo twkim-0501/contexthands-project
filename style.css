@@ -55,18 +55,17 @@ h2 { margin-bottom: 1.5rem; text-align: center; font-size: clamp(1.85rem,3vw,2.3
 .action-choices button[aria-pressed=true] { color: var(--ink); border-color: var(--blue); font-weight: 650; }
 video { display: block; width: 100%; height: auto; background: white; }
 video[hidden] { display: none; }
-.pair { max-width: 53rem; margin: auto; }
-.panel-key { display: grid; grid-template-columns: 270fr 605fr 601fr; text-align: center; color: var(--muted); font-size: .9rem; margin-bottom: .25rem; }
-.pair figcaption, .comparison h3 { text-align: center; color: var(--ink); font-weight: 560; font-size: 1.13rem; margin: .6rem auto; }
+#video { max-width: 60rem; }
+.hand-instruction { margin-top: .6rem; color: var(--ink); font-size: .94rem; line-height: 1.4; }
+.comparison h3 { text-align: center; color: var(--ink); font-weight: 560; font-size: 1.13rem; margin: .6rem auto; }
 .line-details { margin: 1.4rem auto 0; }
 details > summary { font-weight: 560; color: var(--blue); }
 details[open] > summary { margin-bottom: .7rem; }
 summary small { font-size: .85rem; font-weight: normal; color: var(--muted); margin-left: .3rem; }
-#video, #settings { max-width: 53rem; }
+#settings { max-width: 53rem; }
 #quantitative { max-width: 57rem; }
 #settings p, #quantitative details p { font-size: .95rem; }
 #settings p + p { margin-top: .6rem; }
-#video video { margin-top: 1rem; }
 .comparison .meta, .stat, .transport span { color: var(--muted); font-size: .825rem; font-variant-numeric: tabular-nums; }
 .comparison .meta { text-align: center; margin: .2rem auto .8rem; }
 .frames { display: grid; grid-template-columns: repeat(7,minmax(0,1fr)); border-block: 1px solid var(--rule); padding: .85rem 0; }

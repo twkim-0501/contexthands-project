@@ -34,6 +34,20 @@ function pauseOthers(active) {
 }
 byId('overview').addEventListener('play', () => pauseOthers(byId('overview')));
 
+const instruction = byId('hand-instruction');
+const captions = byId('overview').textTracks[0];
+const narrowScreen = matchMedia('(max-width: 600px)');
+function showInstruction() {
+  if (narrowScreen.matches && captions.mode === 'disabled') captions.mode = 'hidden';
+  const cue = captions.activeCues && captions.activeCues[0];
+  instruction.hidden = !narrowScreen.matches || captions.mode !== 'hidden' || !cue;
+  if (!instruction.hidden) instruction.textContent = cue.text;
+}
+captions.addEventListener('cuechange', showInstruction);
+byId('overview').textTracks.addEventListener('change', showInstruction);
+narrowScreen.addEventListener('change', showInstruction);
+showInstruction();
+
 function showComparison(container, key) {
   const previous = container.querySelector('video');
   if (previous) {
@@ -142,28 +156,6 @@ limitations.addEventListener('toggle', () => {
   if (!limitations.open && video) video.pause();
 });
 
-const pair = byId('pair-movie');
-const pairedCaptions = {
-  x16: '“Stir in the green mug with the rod.”',
-  s19: '“Cut the apple with the orange cleaver knife.”'
-};
-document.querySelectorAll('[data-pair]').forEach(button => {
-  button.addEventListener('click', () => {
-    if (button.getAttribute('aria-pressed') === 'true') return;
-    const key = button.dataset.pair;
-    pair.pause();
-    pair.poster = asset('hero-' + key + '.webp');
-    pair.src = asset('hero-' + key + '.mp4');
-    byId('pair-caption').textContent = pairedCaptions[key];
-    document.querySelectorAll('[data-pair]').forEach(option => {
-      option.setAttribute('aria-pressed', String(option === button));
-    });
-  });
-});
-pair.addEventListener('play', () => pauseOthers(pair));
-byId('video').addEventListener('toggle', () => {
-  if (!byId('video').open) byId('overview').pause();
-});
 function revealFragment() {
   const target = byId(location.hash.slice(1));
   if (!target) return;
