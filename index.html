@@ -4,12 +4,13 @@
 <meta name="robots" content="noindex,nofollow,noarchive"><meta name="referrer" content="no-referrer">
 <title>ContextHands: Completing Hand Motion with Learned Context and Joint-Specific Body Kinematics</title>
 <meta name="description" content="ContextHands completes hand motion from an observed body sequence and text describing what each hand does and when.">
-<link rel="icon" href="data:,"><link rel="stylesheet" href="style.css?v=1213b406f829"><script src="page.js?v=229027d8979e" defer></script>
+<link rel="icon" href="data:,"><link rel="stylesheet" href="style.css?v=f31ec258952c"><script src="page.js?v=e203da925b3b" defer></script>
 </head><body><a class="skip" href="#abstract">Skip to abstract</a><main>
 <header id="top"><h1><strong>ContextHands</strong><span class="sr">: </span><span class="subtitle">Completing Hand Motion with Learned Context<br class="desktop-break"> and Joint-Specific Body Kinematics</span></h1>
 <p class="authors"><span>Taewoo Kim</span> <span>Seunghun Koh</span> <span>Hyosup Shin</span> <span>Sungho Jo<sup>†</sup></span></p>
 <p class="affiliation">Neuro-Machine Augmented Intelligence Lab (NMAIL), KAIST</p><p class="corresponding"><sup>†</sup> Corresponding author</p>
-<div class="resources" role="group" aria-label="Project resources" aria-describedby="availability"><span>Paper</span><span>Supplementary</span><span>Code</span><span>Weights</span></div>
+<div class="resources" role="group" aria-label="Project resources" aria-describedby="availability">
+<a role="link" aria-disabled="true">Paper</a><a role="link" aria-disabled="true">Supplementary</a><a role="link" aria-disabled="true">Code</a><a role="link" aria-disabled="true">Weights</a></div>
 <p id="availability">Coming soon</p></header>
 <figure class="paper-figure" id="figure-1">
 <a class="plate" href="assets/figure-1.webp" data-figure="1" aria-label="Enlarge Figure 1"><img src="assets/figure-1.webp" width="3100" height="1573" fetchpriority="high" alt="Recorded scenes, body motion, timed instructions and generated hand poses for stirring, cutting and grasping a lid."></a>
@@ -55,9 +56,10 @@
 </details>
 <section class="section" id="comparisons"><h2>Qualitative results</h2>
 <div class="action-choices" role="group" aria-label="Choose a seven-way comparison">
-<button type="button" aria-pressed="true" data-case="s19">Cutting</button><button type="button" aria-pressed="false" data-case="w01">Unplugging</button><button type="button" aria-pressed="false" data-case="t01">Pouring</button></div>
-<div id="comparison-player" class="comparison"></div><noscript><a href="assets/s19.mp4?v=505">Play the cutting comparison (seed 505)</a></noscript>
+<button type="button" id="cutting" aria-pressed="true" data-case="s19">Cutting</button><button type="button" id="unplugging" aria-pressed="false" data-case="w01">Unplugging</button><button type="button" id="pouring" aria-pressed="false" data-case="t01">Pouring</button></div>
+<div id="comparison-player" class="comparison"></div><noscript><a href="assets/s19.mp4?v=505">Cutting (seed 505)</a> · <a href="assets/w01.mp4">Unplugging (seed 501)</a> · <a href="assets/t01.mp4">Pouring (seed 501)</a></noscript>
 <details class="line-details" id="settings"><summary>Comparison settings</summary>
+<p>The cutting example uses the second 150-frame clip (5–10 s) of the <a href="https://huggingface.co/datasets/kelvin34501/OakInk-v2/blob/21705616140d726607027e70d58b7837f442ffd8/anno_preview/scene_01__A007%2B%2Bseq__4602f51364aa3751d953__2023-04-21-10-56-14.pkl">OakInk2 recording</a> and its <a href="https://huggingface.co/datasets/kelvin34501/OakInk-v2/blob/21705616140d726607027e70d58b7837f442ffd8/program.tar">timed annotations</a>.</p>
 <p>All six models use the generation seed shown for each comparison. The three-panel motion examples and overview use seed 501. Recorded objects appear only in reference panels in the videos.</p>
 <p>ContextHands uses its 30k-update checkpoint throughout. BOTH2Hands uses its 34k-update checkpoint in the videos and its 32k-update checkpoint in Figure 3.</p></details>
 <details class="line-details" id="limitations"><summary>Limitations · pouring from a test tube</summary>

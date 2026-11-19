@@ -37,7 +37,7 @@ h1 strong { display: table; margin: auto; padding-inline: .08em; font-size: clam
 .corresponding, #availability { font-size: .82rem; color: var(--muted); }
 .resources, .action-choices { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; }
 .resources { gap: .4rem; margin: 1rem auto .25rem; }
-.resources span { color: #333a40; background: #f0f2f4; border: 1px solid #dde1e4; border-radius: 18px; padding: .23rem .84rem; font-size: .9rem; line-height: 1.5; font-weight: 550; }
+.resources a { color: #333a40; background: #f0f2f4; border: 1px solid #dde1e4; border-radius: 18px; padding: .23rem .84rem; font-size: .9rem; line-height: 1.5; font-weight: 550; }
 .paper-figure { margin-inline: auto; }
 #figure-1 { max-width: 59rem; }
 #figure-2 { max-width: 56rem; }
@@ -119,7 +119,7 @@ dialog::backdrop { background: rgb(19 28 35 / 70%); }
   header { padding-top: 2rem; }
   .authors { max-width: 19rem; }
   .resources { gap: .25rem; }
-  .resources span { padding: .2rem .55rem; font-size: .84rem; }
+  .resources a { padding: .2rem .55rem; font-size: .84rem; }
   .frames { grid-template-columns: repeat(2,minmax(0,1fr)); }
   .action-choices { gap: .2rem .68rem; }
   .paper-figure figcaption { display: block; }
@@ -129,6 +129,6 @@ dialog::backdrop { background: rgb(19 28 35 / 70%); }
 @media (max-width: 360px) {
   header { padding-top: 1.5rem; }
   .authors { margin-top: 1rem; }
-  .resources span { padding-inline: .38rem; }
+  .resources a { padding-inline: .38rem; }
 }
 @media (forced-colors: active) { h1 strong { color: CanvasText; } }

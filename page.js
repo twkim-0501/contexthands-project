@@ -125,9 +125,13 @@ function chooseCase(key) {
   });
   showComparison(comparison, key);
 }
-chooseCase('s19');
+const initialTab = byId(location.hash.slice(1));
+chooseCase((initialTab && initialTab.dataset.case) || 's19');
 document.querySelectorAll('[data-case]').forEach(button => {
-  button.addEventListener('click', () => chooseCase(button.dataset.case));
+  button.addEventListener('click', () => {
+    if (button.getAttribute('aria-pressed') !== 'true') chooseCase(button.dataset.case);
+    history.replaceState(history.state, '', '#' + button.id);
+  });
 });
 
 const limitations = byId('limitations');
@@ -162,7 +166,9 @@ byId('video').addEventListener('toggle', () => {
 });
 function revealFragment() {
   const target = byId(location.hash.slice(1));
-  if (target && target.tagName === 'DETAILS') {
+  if (!target) return;
+  if (target.dataset.case && target.getAttribute('aria-pressed') !== 'true') chooseCase(target.dataset.case);
+  if (target.tagName === 'DETAILS') {
     target.open = true;
     requestAnimationFrame(() => target.scrollIntoView());
   }
