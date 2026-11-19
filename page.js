@@ -8,22 +8,22 @@ const cases = {
   s19: {
     prompt: 'Cut the apple with the orange cleaver knife.', hand: 'Right', first: 0, last: 149, initial: 37,
     seed: 505, scores: ['10.53','17.94','12.41','18.06','12.03','13.12'],
-    note: 'The cutting instruction starts at frame 41. Each prediction retains its own wrist orientation. This example uses the ContextHands sample shown in the paper teaser.'
+    note: 'The cutting instruction starts at frame 41. This is the ContextHands sample from Figure 1, shown here with its predicted wrist rotation.'
   },
   w01: {
     prompt: 'Remove the power plug of the laptop.', hand: 'Left', first: 90, last: 149, initial: 0,
     scores: ['6.18','15.10','15.33','15.74','27.30','20.60'],
-    note: 'In this selected interval, ContextHands has lower left-finger rotation error than each of the five baselines. Wrist orientations are aligned to the reference to show the differences in finger articulation.'
+    note: 'The reference fingers stay extended through this interval. With the wrists aligned, compare the spacing between the fingers.'
   },
   t01: {
     prompt: 'Pour the content from the tall blue mug to the bowl.', hand: 'Right', first: 90, last: 149, initial: 0,
     scores: ['9.036','9.039','11.368','13.252','12.284','14.918'],
-    note: 'With the wrists aligned to the reference, ContextHands and BOTH2Hands have nearly identical mean right-finger rotation errors in this pour.'
+    note: 'The wrists are aligned to the reference. ContextHands and BOTH2Hands both average about 9.04° of finger rotation error over these frames.'
   },
   f01: {
     prompt: 'Pour the experiment substance B from the test tube to the conical flask.', hand: 'Left', first: 0, last: 59, initial: 0,
     scores: ['33.10','29.87','10.96','14.39','37.55','17.72'],
-    note: 'The recorded left fingers are bent in the opening frame. ContextHands opens the hand, and its mean finger-rotation error is 33.10° over the interval. MDM more closely follows the recording at 10.96°. The wrists are aligned for this comparison.'
+    note: 'The recorded fingers are bent from the first frame. Even with the wrist aligned to the reference, ContextHands keeps the left hand open.'
   }
 };
 
@@ -50,6 +50,7 @@ function showComparison(container, key) {
     <h3>“${info.prompt}”</h3>
     <p class="meta">${info.hand} hand · Frames ${info.first}–${info.last} · Seed ${info.seed || 501}</p>
     <div class="frames">${tiles}</div>
+    <p class="meta">Mean rotation error over the 15 finger joints and the full interval (degrees).</p>
     <div class="transport">
       <button type="button" aria-label="Play comparison">▶ Play</button>
       <input type="range" aria-label="Playback position for ${info.prompt}" min="0" max="${Math.floor((info.last - info.first) / 2)}" value="${info.initial}" step="1">
@@ -194,9 +195,9 @@ const detail = byId('detail');
 const pane = reader.querySelector('.pan');
 const zoom = byId('zoom');
 const descriptions = {
-  '1': ['Hand-motion completion', 'The stirring and cutting close-ups use the reference wrist orientation. The lid close-up preserves relative predicted wrist rotations. Objects illustrate the action.'],
-  '2': ['Method', 'At inference, the prior uses body motion and timed descriptions. During training, the posterior also observes the target hand motion.'],
-  '3': ['Qualitative comparison', 'Within each example, all methods use the same test clip, generation seed and frames. L and R identify the left and right hands. All methods share cameras and scale.']
+  '1': ['Hand-motion completion', 'The stirring (seed 503) and cutting (seed 505) close-ups use the recorded wrist orientation. The lid grasp (seed 508) preserves the relative predicted wrist rotations.'],
+  '2': ['Method', 'During training, the posterior also uses the recorded hand motion. At inference, we sample from the prior conditioned on body motion and timed descriptions.'],
+  '3': ['Qualitative comparison', 'All methods use the same clip, frames, seed, cameras and scale within each example. L and R mark the left and right hands. The object views illustrate grasp shape.']
 };
 let opener;
 function magnify(on) {
