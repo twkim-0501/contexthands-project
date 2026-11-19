@@ -18,7 +18,7 @@ main, footer { width: min(100% - 3rem, 64rem); margin-inline: auto; }
 h1, h2, h3, p, figure, pre { margin: 0; }
 h1, h2, h3, b, strong { color: var(--ink); }
 button, input { font: inherit; }
-button, summary { cursor: pointer; }
+button { cursor: pointer; }
 a { color: var(--blue); text-underline-offset: .17em; }
 :focus-visible { outline: 3px solid #317eaa; outline-offset: 3px; }
 .sr, .skip:not(:focus) { position: absolute; width: 1px; height: 1px; clip-path: inset(50%); overflow: hidden; }
@@ -58,14 +58,7 @@ video[hidden] { display: none; }
 #video { max-width: 60rem; }
 .hand-instruction { margin-top: .6rem; color: var(--ink); font-size: .94rem; line-height: 1.4; }
 .comparison h3 { text-align: center; color: var(--ink); font-weight: 560; font-size: 1.13rem; margin: .6rem auto; }
-.line-details { margin: 1.4rem auto 0; }
-details > summary { font-weight: 560; color: var(--blue); }
-details[open] > summary { margin-bottom: .7rem; }
-summary small { font-size: .85rem; font-weight: normal; color: var(--muted); margin-left: .3rem; }
-#settings { max-width: 53rem; }
-#quantitative { max-width: 57rem; }
-#settings p, #quantitative details p { font-size: .95rem; }
-#settings p + p { margin-top: .6rem; }
+#quantitative { max-width: 57rem; margin-inline: auto; container-type: inline-size; }
 .comparison .meta, .stat, .transport span { color: var(--muted); font-size: .825rem; font-variant-numeric: tabular-nums; }
 .comparison .meta { text-align: center; margin: .2rem auto .8rem; }
 .frames { display: grid; grid-template-columns: repeat(7,minmax(0,1fr)); border-block: 1px solid var(--rule); padding: .85rem 0; }
@@ -107,6 +100,10 @@ dialog::backdrop { background: rgb(19 28 35 / 70%); }
 #figure-detail-note { font-size: .85rem; line-height: 1.45; padding: .65rem .8rem; }
 @media (max-width: 720px) {
   main, footer { width: calc(100% - 2rem); }
+  .table-scroll caption { position: sticky; left: 0; width: 100cqi; }
+  .table-scroll thead th { white-space: nowrap; }
+  .table-scroll th:first-child { position: sticky; left: 0; background: white; }
+  .table-scroll .ours th { background: inherit; }
   .desktop-break { display: none; }
   .authors { max-width: 24rem; gap: .08rem .95rem; font-size: 1rem; }
   .affiliation { font-size: .94rem; }

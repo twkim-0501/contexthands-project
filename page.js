@@ -19,11 +19,6 @@ const cases = {
     prompt: 'Pour the content from the tall blue mug to the bowl.', hand: 'Right', first: 90, last: 149, initial: 0,
     scores: ['9.036','9.039','11.368','13.252','12.284','14.918'],
     note: 'The wrists are aligned to the reference. ContextHands and BOTH2Hands both average about 9.04° of finger rotation error over these frames.'
-  },
-  f01: {
-    prompt: 'Pour the experiment substance B from the test tube to the conical flask.', hand: 'Left', first: 0, last: 59, initial: 0,
-    scores: ['33.10','29.87','10.96','14.39','37.55','17.72'],
-    note: 'The recorded fingers are bent from the first frame. Even with the wrist aligned to the reference, ContextHands keeps the left hand open.'
   }
 };
 
@@ -148,25 +143,12 @@ document.querySelectorAll('[data-case]').forEach(button => {
   });
 });
 
-const limitations = byId('limitations');
-limitations.addEventListener('toggle', () => {
-  const player = byId('limitation-player');
-  const video = player.querySelector('video');
-  if (limitations.open && !video) showComparison(player, 'f01');
-  if (!limitations.open && video) video.pause();
-});
-
-function revealFragment() {
-  const target = byId(location.hash.slice(1));
-  if (!target) return;
-  if (target.dataset.case && target.getAttribute('aria-pressed') !== 'true') chooseCase(target.dataset.case);
-  if (target.tagName === 'DETAILS') {
-    target.open = true;
-    requestAnimationFrame(() => target.scrollIntoView());
+window.addEventListener('hashchange', () => {
+  const tab = byId(location.hash.slice(1));
+  if (tab && tab.dataset.case && tab.getAttribute('aria-pressed') !== 'true') {
+    chooseCase(tab.dataset.case);
   }
-}
-window.addEventListener('hashchange', revealFragment);
-revealFragment();
+});
 
 const copyCitation = byId('copy-citation');
 if (navigator.clipboard) {
