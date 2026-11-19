@@ -7,8 +7,8 @@ const models = ['Reference', 'ContextHands', 'BOTH2Hands', 'MDM', 'T2M-GPT', 'ML
 const cases = {
   s19: {
     prompt: 'Cut the apple with the orange cleaver knife.', hand: 'Right', first: 0, last: 149, initial: 37,
-    scores: ['16.00','18.25','11.80','16.62','15.87','13.52'],
-    note: 'The cutting description applies to frames 41–149. The reference includes the recorded cleaver. Each prediction retains its own wrist orientation. Over the full 150-frame clip, MDM has the lowest right-finger rotation error.'
+    seed: 505, scores: ['10.53','17.94','12.41','18.06','12.03','13.12'],
+    note: 'The cutting instruction starts at frame 41. Each prediction retains its own wrist orientation. This example uses the ContextHands sample shown in the paper teaser.'
   },
   w01: {
     prompt: 'Remove the power plug of the laptop.', hand: 'Left', first: 90, last: 149, initial: 0,
@@ -48,7 +48,7 @@ function showComparison(container, key) {
     <span class="stat">${i ? info.scores[i - 1] + '°' : 'Ground truth'}</span></figure>`).join('');
   container.innerHTML = `
     <h3>“${info.prompt}”</h3>
-    <p class="meta">${info.hand} hand · Frames ${info.first}–${info.last}</p>
+    <p class="meta">${info.hand} hand · Frames ${info.first}–${info.last} · Seed ${info.seed || 501}</p>
     <div class="frames">${tiles}</div>
     <div class="transport">
       <button type="button" aria-label="Play comparison">▶ Play</button>
@@ -92,7 +92,8 @@ function showComparison(container, key) {
   still.onload = () => {
     if (video.readyState < 2 || video.seeking) paint(still);
   };
-  still.src = asset(key + '-still.webp');
+  const version = info.seed ? '?v=' + info.seed : '';
+  still.src = asset(key + '-still.webp') + version;
   video.addEventListener('loadedmetadata', () => {
     if (info.initial) video.currentTime = info.initial / 15 + .001;
   }, {once: true});
@@ -114,7 +115,7 @@ function showComparison(container, key) {
     play.textContent = 'Still frame';
     if (still.complete && still.naturalWidth) paint(still);
   });
-  video.src = asset(key + '.mp4');
+  video.src = asset(key + '.mp4') + version;
 }
 const comparison = byId('comparison-player');
 function chooseCase(key) {
@@ -123,9 +124,17 @@ function chooseCase(key) {
   });
   showComparison(comparison, key);
 }
-chooseCase(location.hash === '#limitations' ? 'f01' : 's19');
+chooseCase('s19');
 document.querySelectorAll('[data-case]').forEach(button => {
   button.addEventListener('click', () => chooseCase(button.dataset.case));
+});
+
+const limitations = byId('limitations');
+limitations.addEventListener('toggle', () => {
+  const player = byId('limitation-player');
+  const video = player.querySelector('video');
+  if (limitations.open && !video) showComparison(player, 'f01');
+  if (!limitations.open && video) video.pause();
 });
 
 const pair = byId('pair-movie');
@@ -155,8 +164,6 @@ function revealFragment() {
   if (target && target.tagName === 'DETAILS') {
     target.open = true;
     requestAnimationFrame(() => target.scrollIntoView());
-  } else if (target && target.id === 'limitations' && target.getAttribute('aria-pressed') !== 'true') {
-    chooseCase('f01');
   }
 }
 window.addEventListener('hashchange', revealFragment);

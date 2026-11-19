@@ -4,7 +4,7 @@
 <meta name="robots" content="noindex,nofollow,noarchive"><meta name="referrer" content="no-referrer">
 <title>ContextHands: Completing Hand Motion with Learned Context and Joint-Specific Body Kinematics</title>
 <meta name="description" content="ContextHands completes hand motion from an observed body sequence and text describing what each hand does and when.">
-<link rel="icon" href="data:,"><link rel="stylesheet" href="style.css?v=d604d1d64900"><script src="page.js?v=e5937892ca86" defer></script>
+<link rel="icon" href="data:,"><link rel="stylesheet" href="style.css?v=d604d1d64900"><script src="page.js?v=9e388e5a6b5b" defer></script>
 </head><body><a class="skip" href="#abstract">Skip to abstract</a><main>
 <header id="top"><h1><strong>ContextHands</strong><span class="sr">: </span><span class="subtitle">Completing Hand Motion with Learned Context<br class="desktop-break"> and Joint-Specific Body Kinematics</span></h1>
 <p class="authors"><span>Taewoo Kim</span> <span>Seunghun Koh</span> <span>Hyosup Shin</span> <span>Sungho Jo<sup>†</sup></span></p>
@@ -54,11 +54,13 @@
 </details>
 <section class="section" id="comparisons"><h2>Qualitative results</h2>
 <div class="action-choices" role="group" aria-label="Choose a seven-way comparison">
-<button type="button" aria-pressed="true" data-case="s19">Cutting</button><button type="button" aria-pressed="false" data-case="w01">Unplugging</button><button type="button" aria-pressed="false" data-case="t01">Pouring</button><button type="button" aria-pressed="false" data-case="f01" id="limitations">Failure case</button></div>
-<div id="comparison-player" class="comparison"></div><noscript><a href="assets/s19.mp4">Play the full comparison</a></noscript>
+<button type="button" aria-pressed="true" data-case="s19">Cutting</button><button type="button" aria-pressed="false" data-case="w01">Unplugging</button><button type="button" aria-pressed="false" data-case="t01">Pouring</button></div>
+<div id="comparison-player" class="comparison"></div><noscript><a href="assets/s19.mp4?v=505">Play the cutting comparison (seed 505)</a></noscript>
 <details class="line-details" id="settings"><summary>Comparison settings</summary>
-<p>Only the reference shows recorded objects in the videos. All six methods use generation seed 501. ContextHands uses its 30k-update checkpoint. Figure 1 uses seeds 503, 505 and 508 for stirring, cutting and grasping a lid. BOTH2Hands uses its 34k-update checkpoint in the videos and its 32k-update checkpoint in Figure 3.</p>
+<p>Only the reference shows recorded objects in the videos. Each comparison uses the same generation seed for all six methods: 505 for cutting, 501 for the other actions. The paired motion examples and overview above use seed 501. ContextHands uses its 30k-update checkpoint. Figure 1 uses seeds 503, 505 and 508 for stirring, cutting and grasping a lid. BOTH2Hands uses its 34k-update checkpoint in the videos and its 32k-update checkpoint in Figure 3.</p>
 <p>Scores are mean rotation errors across the 15 finger joints over the displayed interval. ContextHands uses the full body sequence and timed descriptions, with no explicit object geometry or contact constraint.</p></details>
+<details class="line-details" id="limitations"><summary>Limitations · pouring from a test tube</summary>
+<div id="limitation-player" class="comparison"></div><noscript><a href="assets/f01.mp4">Play the test-tube comparison</a></noscript></details>
 <figure class="paper-figure" id="figure-3">
 <a class="plate" href="assets/figure-3.webp" data-figure="3" aria-label="Enlarge Figure 3"><img src="assets/figure-3.webp" width="3301" height="3023" loading="lazy" alt="Four OakInk2 examples compare the reference and six methods across three instants with wrist alignment, ground-truth overlays and object views."></a>
 <figcaption><span><b>Figure 3.</b> Grasping a box lid, cutting an apple, placing a plate and stirring with a rod. Poses run from top to bottom in time. Wrists are aligned to the reference, and translucent overlays show differences in finger articulation. Object views illustrate grasp shapes.</span><a href="assets/figure-3.webp" data-figure="3" aria-label="Enlarge Figure 3">Enlarge</a></figcaption></figure>
