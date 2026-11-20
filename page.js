@@ -7,7 +7,7 @@ const motionFilm = byId('motion-film');
 const compactMotion = matchMedia('(max-width: 600px)');
 function matchPoster() {
   const mobile = motionFilm.currentSrc ? new URL(motionFilm.currentSrc).pathname.endsWith('motion-examples-mobile.mp4') : compactMotion.matches;
-  motionFilm.poster = asset(mobile ? 'motion-mobile-first.webp?v=rated12' : 'motion-examples-first.webp?v=rated12');
+  motionFilm.poster = asset(mobile ? 'motion-mobile-first.webp?v=contents43' : 'motion-examples-first.webp?v=contents43');
 }
 matchPoster();
 motionFilm.addEventListener('loadedmetadata', matchPoster);
@@ -20,7 +20,11 @@ compactMotion.addEventListener('change', () => {
   }, {once: true});
   motionFilm.load();
 });
-const modelNames = ['GT', 'ContextHands', 'BOTH2Hands', 'MDM', 'T2M-GPT', 'MLD', 'HandX'];
+// Hand image bounds in the 1920 x 960 comparison film, in reading order.
+const handPanels = [
+  ['GT', 53, 94], ['ContextHands', 521, 94], ['BOTH2Hands', 989, 94], ['MDM', 1457, 94],
+  ['T2M-GPT', 287, 566], ['MLD', 755, 566], ['HandX', 1223, 566]
+];
 
 function setupComparison(section) {
   const title = section.querySelector('h3').textContent;
@@ -30,22 +34,22 @@ function setupComparison(section) {
   const strip = view.querySelector('.frames'), range = view.querySelector('input');
   const play = view.querySelector('button'), counter = view.querySelector('output');
   const speed = view.querySelector('select');
-  const tile = 256, height = 176, fps = 30, frames = Number(section.dataset.frames);
+  const width = 410, height = 370, fps = 30, frames = Number(section.dataset.frames);
   const last = frames - 1;
   range.max = String(last);
   let callback, drag;
   play.setAttribute('aria-label', 'Play ' + title);
   range.setAttribute('aria-label', title + ' frame');
   speed.setAttribute('aria-label', title + ' playback speed');
-  const panels = modelNames.map(name => {
+  const panels = handPanels.map(([name, x, y]) => {
     const fig = document.createElement('figure'), caption = document.createElement('figcaption');
     caption.textContent = name;
     const canvas = document.createElement('canvas');
-    canvas.width = tile; canvas.height = height;
+    canvas.width = width; canvas.height = height;
     canvas.setAttribute('role', 'img');
     canvas.setAttribute('aria-label', name + ', ' + section.dataset.side + ' hand');
     fig.append(caption, canvas); strip.append(fig);
-    return canvas;
+    return {canvas, x, y};
   });
   function position(frame) {
     range.value = frame;
@@ -54,7 +58,7 @@ function setupComparison(section) {
   }
   function draw(time) {
     if (video.readyState < 2 || video.seeking) return;
-    panels.forEach((c,i) => c.getContext('2d').drawImage(video,i*tile,88,tile,height,0,0,tile,height));
+    panels.forEach(({canvas,x,y}) => canvas.getContext('2d').drawImage(video,x,y,width,height,0,0,width,height));
     position(Math.max(0, Math.min(last, Math.floor(time * fps + .0001))));
   }
   function seek(frame) {
