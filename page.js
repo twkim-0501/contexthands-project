@@ -159,7 +159,7 @@ function showCase(index) {
 }
 function caseFromHash() {
   const id = location.hash.slice(1);
-  return panels.findIndex(panel => panel.id === (id === 'burner' ? 'wrist-orientation' : id));
+  return panels.findIndex(panel => panel.id === id || (id && panel.contains(byId(id))));
 }
 function followCaseLink() {
   const index = caseFromHash();
