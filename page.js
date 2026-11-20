@@ -7,7 +7,7 @@ const motionFilm = byId('motion-film');
 const compactMotion = matchMedia('(max-width: 600px)');
 function matchPoster() {
   const mobile = motionFilm.currentSrc ? new URL(motionFilm.currentSrc).pathname.endsWith('motion-examples-mobile.mp4') : compactMotion.matches;
-  motionFilm.poster = asset(mobile ? 'motion-mobile-first.webp?v=guided39' : 'motion-examples-first.webp?v=guided39');
+  motionFilm.poster = asset(mobile ? 'motion-mobile-first.webp?v=rated12' : 'motion-examples-first.webp?v=rated12');
 }
 matchPoster();
 motionFilm.addEventListener('loadedmetadata', matchPoster);
@@ -30,7 +30,9 @@ function setupComparison(section) {
   const strip = view.querySelector('.frames'), range = view.querySelector('input');
   const play = view.querySelector('button'), counter = view.querySelector('output');
   const speed = view.querySelector('select');
-  const tile = 288, fps = 30, last = Number(range.max);
+  const tile = 256, height = 176, fps = 30, frames = Number(section.dataset.frames);
+  const last = frames - 1;
+  range.max = String(last);
   let callback, drag;
   play.setAttribute('aria-label', 'Play ' + title);
   range.setAttribute('aria-label', title + ' frame');
@@ -39,7 +41,7 @@ function setupComparison(section) {
     const fig = document.createElement('figure'), caption = document.createElement('figcaption');
     caption.textContent = name;
     const canvas = document.createElement('canvas');
-    canvas.width = canvas.height = tile;
+    canvas.width = tile; canvas.height = height;
     canvas.setAttribute('role', 'img');
     canvas.setAttribute('aria-label', name + ', ' + section.dataset.side + ' hand');
     fig.append(caption, canvas); strip.append(fig);
@@ -47,12 +49,12 @@ function setupComparison(section) {
   });
   function position(frame) {
     range.value = frame;
-    counter.value = (video.ended ? video.duration : frame / fps).toFixed(2) + ' / 5 s';
+    counter.value = (video.ended ? video.duration : frame / fps).toFixed(2) + ' / ' + (frames / fps).toFixed(2) + ' s';
     range.setAttribute('aria-valuetext', 'Frame ' + (frame + 1) + ' of ' + (last + 1));
   }
   function draw(time) {
     if (video.readyState < 2 || video.seeking) return;
-    panels.forEach((c,i) => c.getContext('2d').drawImage(video,i*tile,124,tile,tile,0,0,tile,tile));
+    panels.forEach((c,i) => c.getContext('2d').drawImage(video,i*tile,88,tile,height,0,0,tile,height));
     position(Math.max(0, Math.min(last, Math.floor(time * fps + .0001))));
   }
   function seek(frame) {
@@ -111,7 +113,49 @@ function setupComparison(section) {
   video.addEventListener('error',() => { video.hidden=false; view.hidden=true; });
   enable();
 }
-document.querySelectorAll('section.comparison').forEach(setupComparison);
+const tabs = [...document.querySelectorAll('.comparison-tabs [role=tab]')];
+const panels = tabs.map(tab => byId(tab.getAttribute('aria-controls')));
+panels.forEach((panel, i) => {
+  setupComparison(panel);
+  panel.setAttribute('role', 'tabpanel');
+  panel.setAttribute('aria-labelledby', tabs[i].id);
+});
+function showCase(index) {
+  tabs.forEach((tab,i) => {
+    const active = i === index;
+    if (!active) panels[i].querySelector('video').pause();
+    panels[i].hidden = !active;
+    tab.setAttribute('aria-selected', String(active));
+    tab.tabIndex = active ? 0 : -1;
+  });
+}
+function caseFromHash() {
+  const id = location.hash.slice(1);
+  return panels.findIndex(panel => panel.id === (id === 'burner' ? 'wrist-orientation' : id));
+}
+function followCaseLink() {
+  const index = caseFromHash();
+  if (index < 0) return;
+  showCase(index);
+  tabs[index].parentElement.scrollIntoView({block:'start'});
+}
+tabs.forEach((tab,i) => {
+  tab.addEventListener('click', () => {
+    showCase(i);
+    history.replaceState(history.state,'','#'+panels[i].id);
+  });
+  tab.addEventListener('keydown', event => {
+    const next = {ArrowLeft:(i+tabs.length-1)%tabs.length, ArrowRight:(i+1)%tabs.length, Home:0, End:tabs.length-1}[event.key];
+    if (next === undefined) return;
+    event.preventDefault();
+    tabs[next].focus();
+    tabs[next].click();
+  });
+});
+showCase(Math.max(0, caseFromHash()));
+tabs[0].parentElement.hidden = false;
+window.addEventListener('hashchange',followCaseLink);
+followCaseLink();
 
 const copyCitation = byId('copy-citation');
 if (navigator.clipboard) {

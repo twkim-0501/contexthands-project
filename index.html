@@ -4,7 +4,7 @@
 <meta name="robots" content="noindex,nofollow,noarchive"><meta name="referrer" content="no-referrer">
 <title>ContextHands: Completing Hand Motion with Learned Context and Joint-Specific Body Kinematics</title>
 <meta name="description" content="ContextHands completes hand motion from an observed body sequence and text describing what each hand does and when.">
-<link rel="icon" href="data:,"><link rel="stylesheet" href="style.css?v=004e199616cb"><script src="page.js?v=934731b767e4" defer></script>
+<link rel="icon" href="data:,"><link rel="stylesheet" href="style.css?v=17fdfe47dc87"><script src="page.js?v=bb487b8788d5" defer></script>
 </head><body><a class="skip" href="#abstract">Skip to abstract</a><main>
 <header id="top"><h1><strong>ContextHands</strong><span class="sr">: </span><span class="subtitle">Completing Hand Motion with Learned Context<br class="desktop-break"> and Joint-Specific Body Kinematics</span></h1>
 <p class="authors"><span>Taewoo Kim</span> <span>Seunghun Koh</span> <span>Hyosup Shin</span> <span>Sungho Jo<sup>†</sup></span></p>
@@ -26,14 +26,15 @@
 <figcaption><span><b>Figure 2.</b> The upper branch learns context for each hand from body motion and text. In the lower branch, each wrist and finger joint queries the body features separately. Both guide the diffusion generator on the right.</span><a href="assets/figure-2.webp" data-figure="2" aria-label="Enlarge Figure 2">Enlarge</a></figcaption></figure>
 </section>
 <section class="section" id="motion-examples" aria-labelledby="motion-heading">
-<h2 id="motion-heading"><span id="plate">Motion examples</span></h2>
+<h2 id="motion-heading">Motion examples</h2>
 <figure class="paper-figure" id="video">
-<video id="motion-film" controls muted playsinline preload="auto" width="1920" height="512" poster="assets/motion-examples-first.webp?v=guided39" aria-label="OakInk2 reference scene, body motion and text inputs, recorded hands, and ContextHands. A plate on a scale, a bottle cap, a USB hub and an alcohol burner.">
-<source media="(max-width: 600px)" src="assets/motion-examples-mobile.mp4?v=guided39" type="video/mp4">
-<source src="assets/motion-examples.mp4?v=guided39" type="video/mp4">
-<track kind="captions" srclang="en" label="Hand instructions" src="assets/motion-scenes.vtt?v=guided39">
-<track kind="chapters" srclang="en" label="Scenes" src="assets/motion-chapters.vtt">
-<a href="assets/motion-examples.mp4?v=guided39">Open video</a></video>
+<video id="motion-film" controls muted playsinline preload="auto" width="1920" height="582" poster="assets/motion-examples-first.webp?v=rated12" aria-label="OakInk2 reference scene, body motion and text inputs, recorded hands, and ContextHands. Hand opening and closing, individual finger articulation, and wrist orientation.">
+<source media="(max-width: 600px)" src="assets/motion-examples-mobile.mp4?v=rated12" type="video/mp4">
+<source src="assets/motion-examples.mp4?v=rated12" type="video/mp4">
+<track kind="captions" srclang="en" label="Hand instructions" src="assets/motion-scenes.vtt?v=rated12">
+<track kind="chapters" srclang="en" label="Scenes" src="assets/motion-chapters.vtt?v=rated12">
+<a href="assets/motion-examples.mp4?v=rated12">Open video</a></video>
+<figcaption id="plate"><a href="assets/plate-motion.mp4">Additional example · Placing a plate on a scale</a></figcaption>
 
 </figure>
 </section>
@@ -54,35 +55,40 @@
 </section>
 <section class="section" id="comparisons" aria-labelledby="baseline-heading">
 <h2 id="baseline-heading">Qualitative results</h2>
-<section class="comparison" id="finger-articulation" data-side="left" aria-labelledby="finger-articulation-heading">
-<h3 id="finger-articulation-heading"><span>Individual finger articulation</span></h3>
-<p class="comparison-scene">Bottle cap · Extending the left index finger</p>
-<video controls playsinline muted preload="auto" width="2016" height="412" poster="assets/bottle-cap-hands.webp" aria-label="Individual finger articulation. Bottle cap · Extending the left index finger. Ground truth and six methods.">
-<source src="assets/bottle-cap-hands.mp4" type="video/mp4"><a href="assets/bottle-cap-hands.mp4">Open comparison video</a></video>
-</section>
-<section class="comparison" id="hand-opening-closing" data-side="right" aria-labelledby="hand-opening-closing-heading">
+<div class="comparison-tabs" role="tablist" aria-label="Hand motion" hidden>
+<button id="tab-hand-opening-closing" type="button" role="tab" aria-controls="hand-opening-closing" aria-selected="true" tabindex="0">Hand opening and closing</button>
+<button id="tab-finger-articulation" type="button" role="tab" aria-controls="finger-articulation" aria-selected="false" tabindex="-1">Individual finger articulation</button>
+<button id="tab-wrist-orientation" type="button" role="tab" aria-controls="wrist-orientation" aria-selected="false" tabindex="-1">Wrist orientation</button>
+</div>
+<section class="comparison" id="hand-opening-closing" data-frames="114" data-side="right" aria-labelledby="hand-opening-closing-heading">
 <h3 id="hand-opening-closing-heading"><span>Hand opening and closing</span></h3>
 <p class="comparison-scene">USB hub · Closing the right hand</p>
-<video controls playsinline muted preload="auto" width="2016" height="412" poster="assets/usb-hub-hands.webp" aria-label="Hand opening and closing. USB hub · Closing the right hand. Ground truth and six methods.">
-<source src="assets/usb-hub-hands.mp4" type="video/mp4"><a href="assets/usb-hub-hands.mp4">Open comparison video</a></video>
+<video controls playsinline muted preload="auto" width="1792" height="264" poster="assets/usb-hub-hands.webp?v=rated" aria-label="Hand opening and closing. USB hub · Closing the right hand. Ground truth and six methods.">
+<source src="assets/usb-hub-hands.mp4?v=rated" type="video/mp4"><a href="assets/usb-hub-hands.mp4?v=rated">Open comparison video</a></video>
 </section>
-<section class="comparison" id="wrist-orientation" data-side="right" aria-labelledby="wrist-orientation-heading">
+<section class="comparison" id="finger-articulation" data-frames="94" data-side="left" aria-labelledby="finger-articulation-heading">
+<h3 id="finger-articulation-heading"><span>Individual finger articulation</span></h3>
+<p class="comparison-scene">Bottle cap · Extending the left index finger</p>
+<video controls playsinline muted preload="auto" width="1792" height="264" poster="assets/bottle-cap-hands.webp?v=rated" aria-label="Individual finger articulation. Bottle cap · Extending the left index finger. Ground truth and six methods.">
+<source src="assets/bottle-cap-hands.mp4?v=rated" type="video/mp4"><a href="assets/bottle-cap-hands.mp4?v=rated">Open comparison video</a></video>
+</section>
+<section class="comparison" id="wrist-orientation" data-frames="92" data-side="right" aria-labelledby="wrist-orientation-heading">
 <h3 id="wrist-orientation-heading"><span id="burner">Wrist orientation</span></h3>
 <p class="comparison-scene">Alcohol burner · Turning the right wrist</p>
-<video controls playsinline muted preload="auto" width="2016" height="412" poster="assets/burner-hands.webp" aria-label="Wrist orientation. Alcohol burner · Turning the right wrist. Ground truth and six methods.">
-<source src="assets/burner-hands.mp4" type="video/mp4"><a href="assets/burner-hands.mp4">Open comparison video</a></video>
+<video controls playsinline muted preload="auto" width="1792" height="264" poster="assets/burner-hands.webp?v=rated" aria-label="Wrist orientation. Alcohol burner · Turning the right wrist. Ground truth and six methods.">
+<source src="assets/burner-hands.mp4?v=rated" type="video/mp4"><a href="assets/burner-hands.mp4?v=rated">Open comparison video</a></video>
 </section>
 <template id="hand-controls">
 <div class="hand-view" hidden>
 <div class="frames"></div>
 <div class="transport">
 <button type="button" title="Play"></button>
-<input type="range" min="0" max="149" step="1" value="0">
-<output aria-live="off">0.00 / 5 s</output>
+<input type="range" min="0" step="1" value="0">
+<output aria-live="off"></output>
 <select><option value="1">1×</option><option value=".5">0.5×</option></select>
 </div></div>
 </template>
-<p class="comparison-film-link"><a href="assets/baseline-comparison.mp4?v=guided">Watch all three comparisons</a></p>
+<p class="comparison-film-link"><a href="assets/baseline-comparison.mp4?v=rated10">Watch all three comparisons</a></p>
 <div id="paper-comparisons"><figure class="paper-figure" id="figure-3">
 <a class="plate" href="assets/figure-3.webp" data-figure="3" aria-label="Enlarge Figure 3"><img src="assets/figure-3.webp" width="3301" height="3023" loading="lazy" alt="Reference and six methods for grasping a box lid, cutting an apple, placing a plate on a scale and stirring with a rod."></a>
 <figcaption><span><b>Figure 3.</b> Time runs from top to bottom. We align each hand to the recorded wrist position and orientation and overlay the reference pose. In (b), compare the extended index finger and the curl of the other fingers around the cleaver handle.</span><a href="assets/figure-3.webp" data-figure="3" aria-label="Enlarge Figure 3">Enlarge</a></figcaption></figure></div>
