@@ -128,3 +128,41 @@ dialog::backdrop { background: rgb(19 28 35 / 70%); }
   .resources a { padding-inline: .38rem; }
 }
 @media (forced-colors: active) { h1 strong { color: CanvasText; } }
+
+/* Both film sections share a scene and playback position. */
+.film-section [hidden] { display: none; }
+.film-section .paper-figure { max-width: none; }
+.film-grid { display: grid; align-items: stretch; gap: 1.1rem; touch-action: pan-y pinch-zoom; cursor: ew-resize; user-select: none; }
+.motion-grid { grid-template-columns: 1.18fr .95fr 1fr 1fr; }
+.film-tile { min-width: 0; }
+.film-tile strong { display: block; font-size: clamp(1rem,1.7vw,1.25rem); font-weight: 640; letter-spacing: -.025em; }
+.motion-grid strong { padding-bottom: .38rem; border-bottom: 1px solid var(--rule); margin-bottom: .65rem; }
+.film-tile .our-label { color: var(--blue); }
+.film-tile canvas { width: 100%; height: auto; display: block; }
+.motion-grid .film-tile { display: flex; flex-direction: column; }
+.motion-grid canvas { margin-block: auto; }
+.film-tile.input-tile canvas { max-height: 8rem; object-fit: contain; }
+.input-tile b { font-size: .83rem; font-weight: 620; line-height: 1.25; }
+.current-instruction { min-height: 5.6rem; font-size: .94rem; line-height: 1.28; }
+.current-instruction b, .current-instruction span { display: block; }
+.current-instruction span { margin-top: .25rem; }
+.baseline-grid { grid-template-columns: repeat(8,minmax(0,1fr)); gap: .75rem 0; }
+.baseline-grid .film-tile { grid-column: span 2; text-align: center; }
+.baseline-grid .film-tile:nth-child(5) { grid-column: 2 / span 2; }
+.baseline-grid canvas { width: 91%; margin: .2rem auto 0; }
+.film-controls { margin: 1.1rem auto .5rem; max-width: 39rem; display: flex; align-items: center; gap: .85rem; }
+.film-controls button { color: var(--ink); background: white; border: 1px solid #b6c3cb; border-radius: 5px; min-width: 4.4rem; min-height: 2.55rem; font-size: .92rem; }
+.film-controls input { flex: 1; min-width: 0; height: 2.5rem; accent-color: var(--blue); cursor: ew-resize; }
+.film-controls output { min-width: 4.3rem; text-align: right; font-size: .88rem; font-variant-numeric: tabular-nums; color: var(--muted); }
+.earlier-films { border-bottom: 1px solid var(--rule); padding: .65rem 0; }
+.earlier-films summary { cursor: pointer; font-weight: 550; }
+.earlier-films[open] summary { margin-bottom: 1rem; }
+@media (max-width: 690px) {
+  .motion-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: .85rem; }
+  .baseline-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .baseline-grid .film-tile, .baseline-grid .film-tile:nth-child(5) { grid-column: auto; }
+  .baseline-grid .film-tile:last-child { grid-column: 1 / -1; width: 50%; justify-self: center; }
+  .current-instruction { min-height: 5.65rem; }
+  .film-tile.input-tile canvas { max-height: 6.5rem; }
+  .film-section .scene-choices button { min-height: 2.75rem; }
+}

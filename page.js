@@ -135,6 +135,7 @@ function chooseCase(key) {
   showComparison(comparison, key);
 }
 const initialTab = byId(location.hash.slice(1));
+if (initialTab && initialTab.dataset.case) byId('previous-comparisons').open = true;
 chooseCase((initialTab && initialTab.dataset.case) || 's19');
 document.querySelectorAll('[data-case]').forEach(button => {
   button.addEventListener('click', () => {
@@ -145,8 +146,10 @@ document.querySelectorAll('[data-case]').forEach(button => {
 
 window.addEventListener('hashchange', () => {
   const tab = byId(location.hash.slice(1));
-  if (tab && tab.dataset.case && tab.getAttribute('aria-pressed') !== 'true') {
-    chooseCase(tab.dataset.case);
+  if (tab && tab.dataset.case) {
+    byId('previous-comparisons').open = true;
+    if (tab.getAttribute('aria-pressed') !== 'true') chooseCase(tab.dataset.case);
+    tab.scrollIntoView({block: 'center'});
   }
 });
 
