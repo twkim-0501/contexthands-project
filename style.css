@@ -125,9 +125,6 @@ dialog::backdrop { background: rgb(19 28 35 / 70%); }
 @media (forced-colors: active) { h1 strong { color: CanvasText; } }
 
 #motion-film { width: 100%; }
-.more-motions { margin-top: .5rem; color: var(--muted); font-size: .9rem; }
-.more-motions summary { width: fit-content; padding: .35rem 0; cursor: pointer; }
-.more-motions video { margin-top: .65rem; }
 #baseline-video[hidden] { display: none; }
 #baseline-video { gap: .2rem 1.25rem; }
 .frames { padding: 1rem 0 .45rem; cursor: ew-resize; touch-action: pan-y pinch-zoom; user-select: none; }
@@ -150,7 +147,15 @@ dialog::backdrop { background: rgb(19 28 35 / 70%); }
   .action-choices button { min-height: 2.75rem; }
 }
 @media (max-width: 480px) {
-  .comparison { display: flex; flex-direction: column; }
-  .comparison .transport { order: -1; width: 100%; margin: 0 auto .5rem; }
+  #hand-view:not([hidden]) { display: flex; flex-direction: column; }
+  .comparison .transport { order: 0; width: 100%; margin: 0 auto .5rem; }
+  #hand-view .frames { order: 1; }
+  #hand-view #comparison-scene { order: -1; }
   .frames figure:last-child { grid-column: 1 / -1; width: 50%; justify-self: center; }
 }
+
+#comparison-scene { text-align: center; font-size: .98rem; color: var(--text); margin: 0 auto .75rem; }
+#baseline-video { margin-bottom: .7rem; }
+
+.transport select { font: inherit; font-size: .84rem; background: white; color: var(--muted); border: 1px solid var(--rule); border-radius: 4px; padding: .2rem .15rem; }
+.transport output { min-width: 5.4rem; }

@@ -3,29 +3,17 @@
 const byId = id => document.getElementById(id);
 const asset = file => 'assets/' + file;
 
-const models = ['GT', 'ContextHands', 'BOTH2Hands', 'MDM', 'T2M-GPT', 'MLD', 'HandX'];
-const cases = {
-  plate: {frames: 87, initial: 25, file: 'plate-hands', hand: 'right'},
-  burner: {frames: 75, initial: 63, file: 'burner-hands', hand: 'right'},
-  s19: {frames: 75, initial: 37, file: 's19', hand: 'right', first: 0},
-  w01: {frames: 30, initial: 0, file: 'w01', hand: 'left', first: 90},
-  t01: {frames: 30, initial: 0, file: 't01', hand: 'right', first: 90}
-};
-
 const motionFilm = byId('motion-film');
 const compactMotion = matchMedia('(max-width: 600px)');
 function matchPoster() {
-  const mobileFile = motionFilm.currentSrc
-    ? motionFilm.currentSrc.endsWith('motion-examples-mobile.mp4')
-    : compactMotion.matches;
-  motionFilm.poster = asset(mobileFile ? 'motion-mobile-first.webp' : 'motion-examples-first.webp');
+  const mobile = motionFilm.currentSrc ? new URL(motionFilm.currentSrc).pathname.endsWith('motion-examples-mobile.mp4') : compactMotion.matches;
+  motionFilm.poster = asset(mobile ? 'motion-mobile-first.webp?v=full4' : 'motion-examples-first.webp?v=full4');
 }
 matchPoster();
 motionFilm.addEventListener('loadedmetadata', matchPoster);
 compactMotion.addEventListener('change', () => {
-  if (!motionFilm.currentSrc || motionFilm.currentSrc.endsWith('-mobile.mp4') === compactMotion.matches) return;
-  const time = motionFilm.currentTime;
-  const playing = !motionFilm.paused;
+  if (!motionFilm.currentSrc || new URL(motionFilm.currentSrc).pathname.endsWith('-mobile.mp4') === compactMotion.matches) return;
+  const time = motionFilm.currentTime, playing = !motionFilm.paused;
   motionFilm.addEventListener('loadedmetadata', () => {
     motionFilm.currentTime = time;
     if (playing) motionFilm.play().catch(() => {});
@@ -40,145 +28,121 @@ document.addEventListener('play', event => {
   }
 }, true);
 
-function showComparison(container, key) {
-  const oldVideo = container.querySelector('video');
-  if (oldVideo) {
-    oldVideo.pause();
-    oldVideo.removeAttribute('src');
-    oldVideo.load();
-  }
-  const info = cases[key];
-  // Earlier clips have a 190px tile and sample every other 30 fps source frame.
-  const earlier = info.first !== undefined;
-  const tile = earlier ? 190 : 288;
-  const left = earlier ? 28 : 0;
-  const top = earlier ? 51 : 40;
-  const fps = earlier ? 15 : 30;
-  const max = info.frames - 1;
-  const title = document.querySelector('[data-case="' + key + '"]').textContent;
-  const panels = models.map(name => `
-    <figure><figcaption>${name}</figcaption>
-    <canvas width="${tile}" height="${tile}" role="img" aria-label="${name}, ${info.hand} hand"></canvas></figure>`).join('');
-  container.innerHTML = `
-    <div class="frames">${panels}</div>
-    <div class="transport">
-      <button type="button" aria-label="Play comparison" title="Play"></button>
-      <input type="range" min="0" max="${max}" step="1" value="${info.initial}" aria-label="Comparison frame for ${title}">
-      <output aria-live="off"></output>
-    </div>
-    <video muted playsinline preload="auto" hidden></video>`;
-  const video = container.querySelector('video');
-  const strip = container.querySelector('.frames');
-  const canvases = Array.from(strip.querySelectorAll('canvas'));
-  const play = container.querySelector('button');
-  const seek = container.querySelector('input');
-  const output = container.querySelector('output');
-  const version = key === 's19' ? '?v=505' : '';
-  const still = new Image();
-  let requested = info.initial;
-  let showingPreview = !earlier;
-  let animation;
+function setupComparison() {
+  const chapters = [
+    {scene: 'Bottle cap · Extending the left index finger', side: 'left'},
+    {scene: 'USB hub · Closing the right hand', side: 'right'},
+    {scene: 'Alcohol burner · Turning the right wrist', side: 'right'}
+  ];
+  const modelNames = ['GT', 'ContextHands', 'BOTH2Hands', 'MDM', 'T2M-GPT', 'MLD', 'HandX'];
+  const tabs = Array.from(byId('baseline-video').querySelectorAll('button'));
+  const video = byId('hand-film'), view = byId('hand-view');
+  const strip = view.querySelector('.frames'), range = view.querySelector('input');
+  const play = view.querySelector('button'), counter = view.querySelector('output');
+  const tile = 288, fps = 30, chapterFrames = 150, last = Number(range.max);
+  let currentChapter = -1, callback, drag;
 
-  function position(sample) {
-    seek.value = sample;
-    output.value = earlier ? 'Frame ' + (info.first + sample * 2) : (sample + 1) + ' / ' + info.frames;
-    seek.setAttribute('aria-valuetext', earlier ? output.value : 'Frame ' + (sample + 1) + ' of ' + info.frames);
+  const panels = modelNames.map(name => {
+    const fig = document.createElement('figure'), caption = document.createElement('figcaption');
+    caption.textContent = name;
+    const canvas = document.createElement('canvas');
+    canvas.width = canvas.height = tile;
+    canvas.setAttribute('role', 'img');
+    fig.append(caption, canvas); strip.append(fig);
+    return canvas;
+  });
+  function position(frame) {
+    const chapter = Math.floor(frame / chapterFrames);
+    if (chapter !== currentChapter) {
+      currentChapter = chapter;
+      byId('comparison-scene').textContent = chapters[chapter].scene;
+      tabs.forEach((tab,i) => tab.setAttribute('aria-pressed', String(i === chapter)));
+      panels.forEach((c,i) => c.setAttribute('aria-label', modelNames[i] + ', ' + chapters[chapter].side + ' hand'));
+    }
+    range.value = frame;
+    counter.value = (video.ended ? 15 : frame / fps).toFixed(2) + ' / 15 s';
+    range.setAttribute('aria-valuetext', chapters[chapter].scene + ', frame ' + (frame % chapterFrames + 1) + ' of ' + chapterFrames);
   }
-  function paint(source) {
-    canvases.forEach((c, i) => c.getContext('2d').drawImage(source,
-      left + i * tile, top, tile, tile, 0, 0, tile, tile));
+  function draw(time) {
+    if (video.readyState < 2 || video.seeking) return;
+    panels.forEach((c,i) => c.getContext('2d').drawImage(video,i*tile,124,tile,tile,0,0,tile,tile));
+    position(Math.max(0, Math.min(last, Math.floor(time * fps + .0001))));
   }
-  function sync(time = video.currentTime) {
-    if (video.readyState < 2 || video.seeking || !video.isConnected) return;
-    paint(video);
-    position(Math.min(max, Math.floor(time * fps + 0.0001)));
+  function seek(frame) {
+    video.pause();
+    const clamped = Math.max(0, Math.min(last,frame));
+    position(clamped);
+    video.currentTime = (clamped + .5) / fps;
   }
-  function watch() {
-    if (video.paused || video.ended || !video.isConnected) return;
+  function tick() {
+    if (video.paused || video.ended) return;
     if (video.requestVideoFrameCallback) {
-      animation = video.requestVideoFrameCallback((_, frame) => { sync(frame.mediaTime); watch(); });
+      callback = video.requestVideoFrameCallback((_,frame) => { draw(frame.mediaTime); tick(); });
     } else {
-      animation = requestAnimationFrame(() => { sync(); watch(); });
+      callback = requestAnimationFrame(() => { draw(video.currentTime); tick(); });
     }
   }
-  function cancelWatch() {
-    if (video.cancelVideoFrameCallback) video.cancelVideoFrameCallback(animation);
-    else cancelAnimationFrame(animation);
-  }
   function transport() {
-    cancelWatch();
+    if (video.cancelVideoFrameCallback) video.cancelVideoFrameCallback(callback);
+    else cancelAnimationFrame(callback);
     const playing = !video.paused && !video.ended;
-    play.dataset.playing = playing;
-    play.title = playing ? 'Pause' : 'Play';
-    play.setAttribute('aria-label', play.title + ' comparison');
-    if (playing) watch();
+    play.dataset.playing = String(playing); play.title = playing ? 'Pause' : 'Play';
+    play.setAttribute('aria-label',play.title + ' comparison');
+    if (playing) tick();
   }
-  function move(sample) {
-    showingPreview = false;
-    video.pause();
-    requested = Math.max(0, Math.min(max, sample));
-    position(requested);
-    if (video.readyState >= 1) video.currentTime = (requested + 0.5) / fps;
-  }
-  position(requested);
-  still.onload = () => { if (video.readyState < 2 || video.seeking || video.error) paint(still); };
-  still.src = asset(info.file + (earlier ? '-still.webp' : '.webp')) + version;
-  video.addEventListener('loadedmetadata', () => { video.currentTime = (requested + 0.5) / fps; }, {once: true});
-  ['loadeddata','seeked','ended'].forEach(event => video.addEventListener(event, () => sync()));
-  ['play','pause','ended'].forEach(event => video.addEventListener(event, transport));
-  seek.addEventListener('input', () => move(Number(seek.value)));
+  const speed = view.querySelector('select');
+  speed.addEventListener('change', () => { video.playbackRate = Number(speed.value); });
+  range.addEventListener('input', () => seek(Number(range.value)));
   play.addEventListener('click', () => {
     if (!video.paused) { video.pause(); return; }
-    if (showingPreview || video.ended || Number(seek.value) === max) move(0);
+    if (video.ended || Number(range.value) === last) seek(0);
     video.play().catch(transport);
   });
-  let drag;
+  tabs.forEach((tab,i) => tab.addEventListener('click', () => {
+    seek(i*chapterFrames);
+    history.replaceState(history.state,'','#'+tab.id);
+  }));
+  function linkedChapter() {
+    const id = location.hash.slice(1);
+    if (id === 'burner') return 2;
+    return tabs.findIndex(tab => tab.id === id);
+  }
+  window.addEventListener('hashchange', () => {
+    const chapter = linkedChapter();
+    if (chapter >= 0 && video.readyState >= 1) seek(chapter * chapterFrames);
+  });
+  // Horizontal dragging steps the same decoded frame for all seven hands.
   strip.addEventListener('pointerdown', e => {
-    if (e.isPrimary && e.button === 0) drag = {id: e.pointerId, x: e.clientX, y: e.clientY, start: Number(seek.value)};
+    if (e.isPrimary && e.button === 0) drag = {id:e.pointerId,x:e.clientX,y:e.clientY,frame:Number(range.value)};
   });
   strip.addEventListener('pointermove', e => {
     if (!drag || e.pointerId !== drag.id) return;
     const dx = e.clientX - drag.x;
     if (!strip.hasPointerCapture(e.pointerId)) {
-      if (Math.abs(dx) < 5 || Math.abs(dx) < Math.abs(e.clientY - drag.y)) return;
+      if (Math.abs(dx) < 5 || Math.abs(dx) < Math.abs(e.clientY-drag.y)) return;
       strip.setPointerCapture(e.pointerId);
     }
-    move(drag.start + Math.round(dx * max / strip.clientWidth));
+    seek(drag.frame + Math.round(dx*chapterFrames/strip.clientWidth));
   });
-  ['pointerup','pointercancel','lostpointercapture'].forEach(event => strip.addEventListener(event, () => { drag = null; }));
-  strip.addEventListener('pointerleave', e => { if (!strip.hasPointerCapture(e.pointerId)) drag = null; });
-  video.addEventListener('error', () => {
-    if (!video.isConnected || !video.hasAttribute('src')) return;
-    play.disabled = seek.disabled = true;
-    if (still.complete && still.naturalWidth) paint(still);
-    position(info.initial);
-    const link = document.createElement('a');
-    link.href = video.src;
-    link.textContent = 'Open video';
-    output.replaceChildren(link);
-  });
-  video.src = asset(info.file + '.mp4') + version;
+  ['pointerup','pointercancel','lostpointercapture'].forEach(event => strip.addEventListener(event, () => { drag=null; }));
+  strip.addEventListener('pointerleave', e => { if (!strip.hasPointerCapture(e.pointerId)) drag=null; });
+  ['seeked','ended','pause'].forEach(event => video.addEventListener(event, () => draw(video.currentTime)));
+  ['play','pause','ended'].forEach(event => video.addEventListener(event,transport));
+  function enable() {
+    if (video.readyState < 2 || !view.hidden || !video.paused) return;
+    draw(video.currentTime);
+    view.hidden = byId('baseline-video').hidden = false; video.hidden = true;
+    const chapter = linkedChapter();
+    if (chapter >= 0) {
+      seek(chapter * chapterFrames);
+      tabs[chapter].scrollIntoView({block:'center'});
+    }
+  }
+  video.addEventListener('loadeddata',enable);
+  video.addEventListener('error',() => { video.hidden=false; view.hidden=byId('baseline-video').hidden=true; });
+  enable();
 }
-byId('baseline-video').hidden = false;
-const comparison = byId('comparison-player');
-function chooseCase(key) {
-  document.querySelectorAll('[data-case]').forEach(button => {
-    button.setAttribute('aria-pressed', String(button.dataset.case === key));
-  });
-  showComparison(comparison, key);
-}
-const initialTab = byId(location.hash.slice(1));
-chooseCase((initialTab && initialTab.dataset.case) || 'plate');
-document.querySelectorAll('[data-case]').forEach(button => {
-  button.addEventListener('click', () => {
-    if (button.getAttribute('aria-pressed') !== 'true') chooseCase(button.dataset.case);
-    history.replaceState(history.state, '', '#' + button.id);
-  });
-});
-window.addEventListener('hashchange', () => {
-  const tab = byId(location.hash.slice(1));
-  if (tab && tab.dataset.case && tab.getAttribute('aria-pressed') !== 'true') chooseCase(tab.dataset.case);
-});
+setupComparison();
 
 const copyCitation = byId('copy-citation');
 if (navigator.clipboard) {
