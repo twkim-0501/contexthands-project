@@ -3,130 +3,161 @@
 const byId = id => document.getElementById(id);
 const asset = file => 'assets/' + file;
 
-const models = ['Reference', 'ContextHands', 'BOTH2Hands', 'MDM', 'T2M-GPT', 'MLD', 'HandX'];
+const models = ['GT', 'ContextHands', 'BOTH2Hands', 'MDM', 'T2M-GPT', 'MLD', 'HandX'];
 const cases = {
-  s19: {
-    prompt: 'Cut the apple with the orange cleaver knife.', hand: 'Right', first: 0, last: 149, initial: 37,
-    seed: 505, scores: ['10.53','17.94','12.41','18.06','12.03','13.12'],
-    note: 'The cutting instruction starts at frame 41. This is the ContextHands sample from Figure 1, shown here with its predicted wrist rotation.'
-  },
-  w01: {
-    prompt: 'Remove the power plug of the laptop.', hand: 'Left', first: 90, last: 149, initial: 0,
-    scores: ['6.18','15.10','15.33','15.74','27.30','20.60'],
-    note: 'The reference fingers stay extended through this interval. With the wrists aligned, compare the spacing between the fingers.'
-  },
-  t01: {
-    prompt: 'Pour the content from the tall blue mug to the bowl.', hand: 'Right', first: 90, last: 149, initial: 0,
-    scores: ['9.036','9.039','11.368','13.252','12.284','14.918'],
-    note: 'The wrists are aligned to the reference. ContextHands and BOTH2Hands both average about 9.04° of finger rotation error over these frames.'
-  }
+  plate: {frames: 87, initial: 25, file: 'plate-hands', hand: 'right'},
+  burner: {frames: 75, initial: 63, file: 'burner-hands', hand: 'right'},
+  s19: {frames: 75, initial: 37, file: 's19', hand: 'right', first: 0},
+  w01: {frames: 30, initial: 0, file: 'w01', hand: 'left', first: 90},
+  t01: {frames: 30, initial: 0, file: 't01', hand: 'right', first: 90}
 };
 
-function pauseOthers(active) {
-  document.querySelectorAll('video').forEach(video => {
-    if (video !== active && !video.paused) video.pause();
-  });
+const motionFilm = byId('motion-film');
+const compactMotion = matchMedia('(max-width: 600px)');
+function matchPoster() {
+  const mobileFile = motionFilm.currentSrc
+    ? motionFilm.currentSrc.endsWith('motion-examples-mobile.mp4')
+    : compactMotion.matches;
+  motionFilm.poster = asset(mobileFile ? 'motion-mobile-first.webp' : 'motion-examples-first.webp');
 }
-byId('overview').addEventListener('play', () => pauseOthers(byId('overview')));
-
-const instruction = byId('hand-instruction');
-const captions = byId('overview').textTracks[0];
-const narrowScreen = matchMedia('(max-width: 600px)');
-function showInstruction() {
-  if (narrowScreen.matches && captions.mode === 'disabled') captions.mode = 'hidden';
-  const cue = captions.activeCues && captions.activeCues[0];
-  instruction.hidden = !narrowScreen.matches || captions.mode !== 'hidden' || !cue;
-  if (!instruction.hidden) instruction.textContent = cue.text;
-}
-captions.addEventListener('cuechange', showInstruction);
-byId('overview').textTracks.addEventListener('change', showInstruction);
-narrowScreen.addEventListener('change', showInstruction);
-showInstruction();
-
-function showComparison(container, key) {
-  const previous = container.querySelector('video');
-  if (previous) {
-    previous.pause();
-    previous.removeAttribute('src');
-    previous.load();
-  }
-  const info = cases[key];
-  const tiles = models.map((name, i) => `
-    <figure><figcaption>${name}</figcaption>
-    <canvas width="190" height="190" role="img" aria-label="${name}, ${info.hand.toLowerCase()} hand"></canvas>
-    <span class="stat">${i ? info.scores[i - 1] + '°' : 'Ground truth'}</span></figure>`).join('');
-  container.innerHTML = `
-    <h3>“${info.prompt}”</h3>
-    <p class="meta">${info.hand} hand · Frames ${info.first}–${info.last} · Seed ${info.seed || 501}</p>
-    <div class="frames">${tiles}</div>
-    <p class="meta">Mean rotation error over the 15 finger joints and the full interval (degrees).</p>
-    <div class="transport">
-      <button type="button" aria-label="Play comparison">▶ Play</button>
-      <input type="range" aria-label="Playback position for ${info.prompt}" min="0" max="${Math.floor((info.last - info.first) / 2)}" value="${info.initial}" step="1">
-      <span>Frame ${info.first + 2 * info.initial}</span>
-    </div>
-    <p class="prose reading">${info.note}</p>
-    <video muted playsinline preload="auto" hidden></video>`;
-  const video = container.querySelector('video');
-  const canvases = Array.from(container.querySelectorAll('canvas'));
-  const play = container.querySelector('.transport button');
-  const seek = container.querySelector('input');
-  const index = container.querySelector('.transport span');
-  const still = new Image();
-  let animation;
-
-  function paint(source) {
-    // All seven panels are decoded from the same video frame.
-    canvases.forEach((canvas, i) => {
-      canvas.getContext('2d').drawImage(source, 28 + i * 190, 51, 190, 190, 0, 0, 190, 190);
+matchPoster();
+motionFilm.addEventListener('loadedmetadata', matchPoster);
+compactMotion.addEventListener('change', () => {
+  if (!motionFilm.currentSrc || motionFilm.currentSrc.endsWith('-mobile.mp4') === compactMotion.matches) return;
+  const time = motionFilm.currentTime;
+  const playing = !motionFilm.paused;
+  motionFilm.addEventListener('loadedmetadata', () => {
+    motionFilm.currentTime = time;
+    if (playing) motionFilm.play().catch(() => {});
+  }, {once: true});
+  motionFilm.load();
+});
+document.addEventListener('play', event => {
+  if (event.target instanceof HTMLVideoElement) {
+    document.querySelectorAll('video').forEach(v => {
+      if (v !== event.target && !v.paused) v.pause();
     });
   }
-  function sync() {
-    if (video.readyState < 2 || video.seeking) return;
-    paint(video);
-    const sample = Math.min(Number(seek.max), Math.floor(video.currentTime * 15));
+}, true);
+
+function showComparison(container, key) {
+  const oldVideo = container.querySelector('video');
+  if (oldVideo) {
+    oldVideo.pause();
+    oldVideo.removeAttribute('src');
+    oldVideo.load();
+  }
+  const info = cases[key];
+  // Earlier clips have a 190px tile and sample every other 30 fps source frame.
+  const earlier = info.first !== undefined;
+  const tile = earlier ? 190 : 288;
+  const left = earlier ? 28 : 0;
+  const top = earlier ? 51 : 40;
+  const fps = earlier ? 15 : 30;
+  const max = info.frames - 1;
+  const title = document.querySelector('[data-case="' + key + '"]').textContent;
+  const panels = models.map(name => `
+    <figure><figcaption>${name}</figcaption>
+    <canvas width="${tile}" height="${tile}" role="img" aria-label="${name}, ${info.hand} hand"></canvas></figure>`).join('');
+  container.innerHTML = `
+    <div class="frames">${panels}</div>
+    <div class="transport">
+      <button type="button" aria-label="Play comparison" title="Play"></button>
+      <input type="range" min="0" max="${max}" step="1" value="${info.initial}" aria-label="Comparison frame for ${title}">
+      <output aria-live="off"></output>
+    </div>
+    <video muted playsinline preload="auto" hidden></video>`;
+  const video = container.querySelector('video');
+  const strip = container.querySelector('.frames');
+  const canvases = Array.from(strip.querySelectorAll('canvas'));
+  const play = container.querySelector('button');
+  const seek = container.querySelector('input');
+  const output = container.querySelector('output');
+  const version = key === 's19' ? '?v=505' : '';
+  const still = new Image();
+  let requested = info.initial;
+  let animation;
+
+  function position(sample) {
     seek.value = sample;
-    index.textContent = 'Frame ' + (info.first + sample * 2);
+    output.value = earlier ? 'Frame ' + (info.first + sample * 2) : (sample + 1) + ' / ' + info.frames;
+    seek.setAttribute('aria-valuetext', earlier ? output.value : 'Frame ' + (sample + 1) + ' of ' + info.frames);
   }
-  function tick() {
-    sync();
-    if (!video.paused && !video.ended && video.isConnected) animation = requestAnimationFrame(tick);
+  function paint(source) {
+    canvases.forEach((c, i) => c.getContext('2d').drawImage(source,
+      left + i * tile, top, tile, tile, 0, 0, tile, tile));
   }
-  function state() {
-    cancelAnimationFrame(animation);
+  function sync(time = video.currentTime) {
+    if (video.readyState < 2 || video.seeking || !video.isConnected) return;
+    paint(video);
+    position(Math.min(max, Math.floor(time * fps + 0.0001)));
+  }
+  function watch() {
+    if (video.paused || video.ended || !video.isConnected) return;
+    if (video.requestVideoFrameCallback) {
+      animation = video.requestVideoFrameCallback((_, frame) => { sync(frame.mediaTime); watch(); });
+    } else {
+      animation = requestAnimationFrame(() => { sync(); watch(); });
+    }
+  }
+  function cancelWatch() {
+    if (video.cancelVideoFrameCallback) video.cancelVideoFrameCallback(animation);
+    else cancelAnimationFrame(animation);
+  }
+  function transport() {
+    cancelWatch();
     const playing = !video.paused && !video.ended;
-    play.textContent = playing ? 'Ⅱ Pause' : '▶ Play';
-    play.setAttribute('aria-label', playing ? 'Pause comparison' : 'Play comparison');
-    if (playing) tick();
+    play.dataset.playing = playing;
+    play.title = playing ? 'Pause' : 'Play';
+    play.setAttribute('aria-label', play.title + ' comparison');
+    if (playing) watch();
   }
-  still.onload = () => {
-    if (video.readyState < 2 || video.seeking) paint(still);
-  };
-  const version = info.seed ? '?v=' + info.seed : '';
-  still.src = asset(key + '-still.webp') + version;
-  video.addEventListener('loadedmetadata', () => {
-    if (info.initial) video.currentTime = info.initial / 15 + .001;
-  }, {once: true});
-  ['loadeddata','seeked','timeupdate','ended'].forEach(event => video.addEventListener(event, sync));
-  ['pause','play','ended'].forEach(event => video.addEventListener(event, state));
-  play.addEventListener('click', () => {
-    if (!video.paused && !video.ended) { video.pause(); return; }
-    pauseOthers(video);
-    if (video.ended) video.currentTime = 0;
-    video.play().catch(error => { if (error.name !== 'AbortError') play.textContent = 'Retry'; });
-  });
-  seek.addEventListener('input', () => {
+  function move(sample) {
     video.pause();
-    if (video.readyState >= 1) video.currentTime = Number(seek.value) / 15 + .001;
+    requested = Math.max(0, Math.min(max, sample));
+    position(requested);
+    if (video.readyState >= 1) video.currentTime = (requested + 0.5) / fps;
+  }
+  position(requested);
+  still.onload = () => { if (video.readyState < 2 || video.seeking || video.error) paint(still); };
+  still.src = asset(info.file + (earlier ? '-still.webp' : '.webp')) + version;
+  video.addEventListener('loadedmetadata', () => { video.currentTime = (requested + 0.5) / fps; }, {once: true});
+  ['loadeddata','seeked','ended'].forEach(event => video.addEventListener(event, () => sync()));
+  ['play','pause','ended'].forEach(event => video.addEventListener(event, transport));
+  seek.addEventListener('input', () => move(Number(seek.value)));
+  play.addEventListener('click', () => {
+    if (!video.paused) { video.pause(); return; }
+    if (video.ended || Number(seek.value) === max) move(0);
+    video.play().catch(transport);
   });
+  let drag;
+  strip.addEventListener('pointerdown', e => {
+    if (e.isPrimary && e.button === 0) drag = {id: e.pointerId, x: e.clientX, y: e.clientY, start: Number(seek.value)};
+  });
+  strip.addEventListener('pointermove', e => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const dx = e.clientX - drag.x;
+    if (!strip.hasPointerCapture(e.pointerId)) {
+      if (Math.abs(dx) < 5 || Math.abs(dx) < Math.abs(e.clientY - drag.y)) return;
+      strip.setPointerCapture(e.pointerId);
+    }
+    move(drag.start + Math.round(dx * max / strip.clientWidth));
+  });
+  ['pointerup','pointercancel','lostpointercapture'].forEach(event => strip.addEventListener(event, () => { drag = null; }));
+  strip.addEventListener('pointerleave', e => { if (!strip.hasPointerCapture(e.pointerId)) drag = null; });
   video.addEventListener('error', () => {
-    if (!video.isConnected || !video.getAttribute('src')) return;
+    if (!video.isConnected || !video.hasAttribute('src')) return;
     play.disabled = seek.disabled = true;
-    play.textContent = 'Still frame';
     if (still.complete && still.naturalWidth) paint(still);
+    position(info.initial);
+    const link = document.createElement('a');
+    link.href = video.src;
+    link.textContent = 'Open video';
+    output.replaceChildren(link);
   });
-  video.src = asset(key + '.mp4') + version;
+  video.src = asset(info.file + '.mp4') + version;
 }
+byId('baseline-video').hidden = false;
 const comparison = byId('comparison-player');
 function chooseCase(key) {
   document.querySelectorAll('[data-case]').forEach(button => {
@@ -135,22 +166,16 @@ function chooseCase(key) {
   showComparison(comparison, key);
 }
 const initialTab = byId(location.hash.slice(1));
-if (initialTab && initialTab.dataset.case) byId('previous-comparisons').open = true;
-chooseCase((initialTab && initialTab.dataset.case) || 's19');
+chooseCase((initialTab && initialTab.dataset.case) || 'plate');
 document.querySelectorAll('[data-case]').forEach(button => {
   button.addEventListener('click', () => {
     if (button.getAttribute('aria-pressed') !== 'true') chooseCase(button.dataset.case);
     history.replaceState(history.state, '', '#' + button.id);
   });
 });
-
 window.addEventListener('hashchange', () => {
   const tab = byId(location.hash.slice(1));
-  if (tab && tab.dataset.case) {
-    byId('previous-comparisons').open = true;
-    if (tab.getAttribute('aria-pressed') !== 'true') chooseCase(tab.dataset.case);
-    tab.scrollIntoView({block: 'center'});
-  }
+  if (tab && tab.dataset.case && tab.getAttribute('aria-pressed') !== 'true') chooseCase(tab.dataset.case);
 });
 
 const copyCitation = byId('copy-citation');

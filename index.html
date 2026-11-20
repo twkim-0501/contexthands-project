@@ -4,7 +4,7 @@
 <meta name="robots" content="noindex,nofollow,noarchive"><meta name="referrer" content="no-referrer">
 <title>ContextHands: Completing Hand Motion with Learned Context and Joint-Specific Body Kinematics</title>
 <meta name="description" content="ContextHands completes hand motion from an observed body sequence and text describing what each hand does and when.">
-<link rel="icon" href="data:,"><link rel="stylesheet" href="style.css?v=f583a8ea6fe0"><script src="motion-player.js?v=bf8fc4efcb8c" defer></script><script src="page.js?v=0f7d9aad089c" defer></script>
+<link rel="icon" href="data:,"><link rel="stylesheet" href="style.css?v=05e1acccce01"><script src="page.js?v=068d1233cdf2" defer></script>
 </head><body><a class="skip" href="#abstract">Skip to abstract</a><main>
 <header id="top"><h1><strong>ContextHands</strong><span class="sr">: </span><span class="subtitle">Completing Hand Motion with Learned Context<br class="desktop-break"> and Joint-Specific Body Kinematics</span></h1>
 <p class="authors"><span>Taewoo Kim</span> <span>Seunghun Koh</span> <span>Hyosup Shin</span> <span>Sungho Jo<sup>†</sup></span></p>
@@ -25,32 +25,18 @@
 <a class="plate" href="assets/figure-2.webp" data-figure="2" aria-label="Enlarge Figure 2"><img src="assets/figure-2.webp" width="3100" height="1916" loading="lazy" alt="Hand Context Encoder, Joint-Query Kinematic Encoder and Hand Diffusion Generator, showing training and inference."></a>
 <figcaption><span><b>Figure 2.</b> The upper branch learns context for each hand from body motion and text. In the lower branch, each wrist and finger joint queries the body features separately. Both guide the diffusion generator on the right.</span><a href="assets/figure-2.webp" data-figure="2" aria-label="Enlarge Figure 2">Enlarge</a></figcaption></figure>
 </section>
-<section class="section film-section" id="motion-examples" data-film="motion" aria-labelledby="motion-heading">
+<section class="section" id="motion-examples" aria-labelledby="motion-heading">
 <h2 id="motion-heading">Motion examples</h2>
-<div class="action-choices scene-choices" role="group" aria-label="Scene for motion examples" hidden><button type="button" data-scene="plate" aria-pressed="true">Plate on a scale</button><button type="button" data-scene="burner" aria-pressed="false">Alcohol burner</button></div>
 <figure class="paper-figure" id="video">
-<video class="film-fallback" controls muted playsinline preload="none" width="1920" height="512" src="assets/motion-examples.mp4" poster="assets/motion-examples-first.webp" aria-label="Motion examples"><a href="assets/motion-examples.mp4">Open video</a></video>
-<div class="film-grid motion-grid" hidden></div>
-<div class="film-controls" hidden>
-<button class="film-toggle" type="button" aria-label="Play motion examples">Play</button>
-<input type="range" min="0" max="86" step="1" value="0" aria-label="Frame in motion examples">
-<output aria-live="off">1 / 87</output>
-</div>
-<figcaption><span>The reference overlays recorded body, hand and object poses on the camera view. ContextHands takes body motion and text as inputs. GT shows the recorded hands.</span><a href="assets/motion-examples.mp4">Open video</a></figcaption>
-</figure>
-</section>
-<section class="section film-section" id="comparisons" data-film="baseline" aria-labelledby="baseline-heading">
-<h2 id="baseline-heading">Baseline comparison</h2>
-<div class="action-choices scene-choices" role="group" aria-label="Scene for baseline comparison" hidden><button type="button" data-scene="plate" aria-pressed="true">Plate on a scale</button><button type="button" data-scene="burner" aria-pressed="false">Alcohol burner</button></div>
-<figure class="paper-figure" id="baseline-video">
-<video class="film-fallback" controls muted playsinline preload="none" width="1920" height="960" src="assets/baseline-comparison.mp4" poster="assets/baseline-comparison-first.webp" aria-label="Baseline comparison"><a href="assets/baseline-comparison.mp4">Open video</a></video>
-<div class="film-grid baseline-grid" hidden></div>
-<div class="film-controls" hidden>
-<button class="film-toggle" type="button" aria-label="Play baseline comparison">Play</button>
-<input type="range" min="0" max="86" step="1" value="0" aria-label="Frame in baseline comparison">
-<output aria-live="off">1 / 87</output>
-</div>
-<figcaption><span>Right hand, same camera and scale for all methods. <span id="wrist-convention"></span>Drag either timeline to inspect the same frame in both views.</span><a href="assets/baseline-comparison.mp4">Open video</a></figcaption>
+<video id="motion-film" controls muted playsinline preload="auto" width="1920" height="512" poster="assets/motion-examples-first.webp" aria-label="OakInk2 reference scene, body motion and text inputs, recorded hands, and ContextHands. Placing a plate on a scale, then lighting an alcohol burner.">
+<source media="(max-width: 600px)" src="assets/motion-examples-mobile.mp4" type="video/mp4">
+<source src="assets/motion-examples.mp4" type="video/mp4">
+<track kind="captions" srclang="en" label="Hand instructions" src="assets/plate-burner.vtt">
+<a href="assets/motion-examples.mp4">Open video</a></video>
+<details class="more-motions"><summary>More motion examples</summary>
+<video id="overview" controls muted playsinline preload="none" width="1440" height="590" src="assets/skeleton-five-scenes.mp4" poster="assets/skeleton-five-scenes.webp" aria-label="Five earlier motion examples">
+<track kind="captions" srclang="en" label="Hand instructions" src="assets/hand-instructions.vtt">
+<a href="assets/skeleton-five-scenes.mp4">Open video</a></video></details>
 </figure>
 </section>
 <section class="section" id="quantitative"><h2>Quantitative results</h2>
@@ -68,21 +54,20 @@
 </tbody></table>
 </div>
 </section>
-<section class="section" id="paper-comparisons"><h2>Qualitative results</h2>
-<details class="earlier-films" id="previous-comparisons"><summary>Cutting, unplugging and pouring</summary>
-<div class="action-choices" role="group" aria-label="Choose a seven-way comparison">
-<button type="button" id="cutting" aria-pressed="true" data-case="s19">Cutting</button><button type="button" id="unplugging" aria-pressed="false" data-case="w01">Unplugging</button><button type="button" id="pouring" aria-pressed="false" data-case="t01">Pouring</button></div>
-<div id="comparison-player" class="comparison"></div><noscript><a href="assets/s19.mp4?v=505">Cutting (seed 505)</a> · <a href="assets/w01.mp4">Unplugging (seed 501)</a> · <a href="assets/t01.mp4">Pouring (seed 501)</a></noscript>
-</details>
-<details class="earlier-films"><summary>More motion examples</summary><figure class="paper-figure"><video id="overview" controls muted playsinline preload="metadata" width="1440" height="590" src="assets/skeleton-five-scenes.mp4" poster="assets/skeleton-five-scenes.webp" aria-label="Five more motion examples" aria-describedby="motion-caption">
-<track kind="captions" srclang="en" label="Hand instructions" src="assets/hand-instructions.vtt">
-<a href="assets/skeleton-five-scenes.mp4">Watch the five motion examples</a></video>
-<p class="hand-instruction" id="hand-instruction" hidden></p>
-<figcaption id="motion-caption"><span>Each scene shows the body motion and timed text on the left, the recorded hands and objects in the middle, and the hands generated by ContextHands on the right.</span><a href="assets/skeleton-five-scenes.mp4">Open video</a></figcaption>
-</figure></details>
-<figure class="paper-figure" id="figure-3">
+<section class="section" id="comparisons" aria-labelledby="baseline-heading">
+<h2 id="baseline-heading">Qualitative results</h2>
+<div class="action-choices" id="baseline-video" hidden role="group" aria-label="Choose a hand comparison">
+<button type="button" id="plate" aria-pressed="true" data-case="plate">Plate on a scale</button>
+<button type="button" id="burner" aria-pressed="false" data-case="burner">Alcohol burner</button>
+<button type="button" id="cutting" aria-pressed="false" data-case="s19">Cutting</button>
+<button type="button" id="unplugging" aria-pressed="false" data-case="w01">Unplugging</button>
+<button type="button" id="pouring" aria-pressed="false" data-case="t01">Pouring</button>
+</div>
+<div id="comparison-player" class="comparison"></div>
+<noscript><p><a href="assets/plate-hands.mp4">Plate on a scale</a> · <a href="assets/burner-hands.mp4">Alcohol burner</a> · <a href="assets/s19.mp4?v=505">Cutting</a> · <a href="assets/w01.mp4">Unplugging</a> · <a href="assets/t01.mp4">Pouring</a></p></noscript>
+<div id="paper-comparisons"><figure class="paper-figure" id="figure-3">
 <a class="plate" href="assets/figure-3.webp" data-figure="3" aria-label="Enlarge Figure 3"><img src="assets/figure-3.webp" width="3301" height="3023" loading="lazy" alt="Reference and six methods for grasping a box lid, cutting an apple, placing a plate on a scale and stirring with a rod."></a>
-<figcaption><span><b>Figure 3.</b> Time runs from top to bottom. We align each hand to the recorded wrist position and orientation and overlay the reference pose. In (b), compare the extended index finger and the curl of the other fingers around the cleaver handle.</span><a href="assets/figure-3.webp" data-figure="3" aria-label="Enlarge Figure 3">Enlarge</a></figcaption></figure>
+<figcaption><span><b>Figure 3.</b> Time runs from top to bottom. We align each hand to the recorded wrist position and orientation and overlay the reference pose. In (b), compare the extended index finger and the curl of the other fingers around the cleaver handle.</span><a href="assets/figure-3.webp" data-figure="3" aria-label="Enlarge Figure 3">Enlarge</a></figcaption></figure></div>
 </section></main>
 <footer>
 <div class="backmatter">
