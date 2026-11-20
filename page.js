@@ -76,6 +76,7 @@ function showComparison(container, key) {
   const version = key === 's19' ? '?v=505' : '';
   const still = new Image();
   let requested = info.initial;
+  let showingPreview = !earlier;
   let animation;
 
   function position(sample) {
@@ -113,6 +114,7 @@ function showComparison(container, key) {
     if (playing) watch();
   }
   function move(sample) {
+    showingPreview = false;
     video.pause();
     requested = Math.max(0, Math.min(max, sample));
     position(requested);
@@ -127,7 +129,7 @@ function showComparison(container, key) {
   seek.addEventListener('input', () => move(Number(seek.value)));
   play.addEventListener('click', () => {
     if (!video.paused) { video.pause(); return; }
-    if (video.ended || Number(seek.value) === max) move(0);
+    if (showingPreview || video.ended || Number(seek.value) === max) move(0);
     video.play().catch(transport);
   });
   let drag;
