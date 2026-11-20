@@ -7,7 +7,7 @@ const motionFilm = byId('motion-film');
 const compactMotion = matchMedia('(max-width: 600px)');
 function matchPoster() {
   const mobile = motionFilm.currentSrc ? new URL(motionFilm.currentSrc).pathname.endsWith('motion-examples-mobile.mp4') : compactMotion.matches;
-  motionFilm.poster = asset(mobile ? 'motion-mobile-first.webp?v=full4' : 'motion-examples-first.webp?v=full4');
+  motionFilm.poster = asset(mobile ? 'motion-mobile-first.webp?v=guided39' : 'motion-examples-first.webp?v=guided39');
 }
 matchPoster();
 motionFilm.addEventListener('loadedmetadata', matchPoster);
@@ -20,48 +20,35 @@ compactMotion.addEventListener('change', () => {
   }, {once: true});
   motionFilm.load();
 });
-document.addEventListener('play', event => {
-  if (event.target instanceof HTMLVideoElement) {
-    document.querySelectorAll('video').forEach(v => {
-      if (v !== event.target && !v.paused) v.pause();
-    });
-  }
-}, true);
+const modelNames = ['GT', 'ContextHands', 'BOTH2Hands', 'MDM', 'T2M-GPT', 'MLD', 'HandX'];
 
-function setupComparison() {
-  const chapters = [
-    {scene: 'Bottle cap · Extending the left index finger', side: 'left'},
-    {scene: 'USB hub · Closing the right hand', side: 'right'},
-    {scene: 'Alcohol burner · Turning the right wrist', side: 'right'}
-  ];
-  const modelNames = ['GT', 'ContextHands', 'BOTH2Hands', 'MDM', 'T2M-GPT', 'MLD', 'HandX'];
-  const tabs = Array.from(byId('baseline-video').querySelectorAll('button'));
-  const video = byId('hand-film'), view = byId('hand-view');
+function setupComparison(section) {
+  const title = section.querySelector('h3').textContent;
+  const video = section.querySelector('video');
+  const view = byId('hand-controls').content.firstElementChild.cloneNode(true);
+  section.append(view);
   const strip = view.querySelector('.frames'), range = view.querySelector('input');
   const play = view.querySelector('button'), counter = view.querySelector('output');
-  const tile = 288, fps = 30, chapterFrames = 150, last = Number(range.max);
-  let currentChapter = -1, callback, drag;
-
+  const speed = view.querySelector('select');
+  const tile = 288, fps = 30, last = Number(range.max);
+  let callback, drag;
+  play.setAttribute('aria-label', 'Play ' + title);
+  range.setAttribute('aria-label', title + ' frame');
+  speed.setAttribute('aria-label', title + ' playback speed');
   const panels = modelNames.map(name => {
     const fig = document.createElement('figure'), caption = document.createElement('figcaption');
     caption.textContent = name;
     const canvas = document.createElement('canvas');
     canvas.width = canvas.height = tile;
     canvas.setAttribute('role', 'img');
+    canvas.setAttribute('aria-label', name + ', ' + section.dataset.side + ' hand');
     fig.append(caption, canvas); strip.append(fig);
     return canvas;
   });
   function position(frame) {
-    const chapter = Math.floor(frame / chapterFrames);
-    if (chapter !== currentChapter) {
-      currentChapter = chapter;
-      byId('comparison-scene').textContent = chapters[chapter].scene;
-      tabs.forEach((tab,i) => tab.setAttribute('aria-pressed', String(i === chapter)));
-      panels.forEach((c,i) => c.setAttribute('aria-label', modelNames[i] + ', ' + chapters[chapter].side + ' hand'));
-    }
     range.value = frame;
-    counter.value = (video.ended ? 15 : frame / fps).toFixed(2) + ' / 15 s';
-    range.setAttribute('aria-valuetext', chapters[chapter].scene + ', frame ' + (frame % chapterFrames + 1) + ' of ' + chapterFrames);
+    counter.value = (video.ended ? video.duration : frame / fps).toFixed(2) + ' / 5 s';
+    range.setAttribute('aria-valuetext', 'Frame ' + (frame + 1) + ' of ' + (last + 1));
   }
   function draw(time) {
     if (video.readyState < 2 || video.seeking) return;
@@ -87,29 +74,15 @@ function setupComparison() {
     else cancelAnimationFrame(callback);
     const playing = !video.paused && !video.ended;
     play.dataset.playing = String(playing); play.title = playing ? 'Pause' : 'Play';
-    play.setAttribute('aria-label',play.title + ' comparison');
+    play.setAttribute('aria-label',play.title + ' ' + title);
     if (playing) tick();
   }
-  const speed = view.querySelector('select');
   speed.addEventListener('change', () => { video.playbackRate = Number(speed.value); });
   range.addEventListener('input', () => seek(Number(range.value)));
   play.addEventListener('click', () => {
     if (!video.paused) { video.pause(); return; }
     if (video.ended || Number(range.value) === last) seek(0);
     video.play().catch(transport);
-  });
-  tabs.forEach((tab,i) => tab.addEventListener('click', () => {
-    seek(i*chapterFrames);
-    history.replaceState(history.state,'','#'+tab.id);
-  }));
-  function linkedChapter() {
-    const id = location.hash.slice(1);
-    if (id === 'burner') return 2;
-    return tabs.findIndex(tab => tab.id === id);
-  }
-  window.addEventListener('hashchange', () => {
-    const chapter = linkedChapter();
-    if (chapter >= 0 && video.readyState >= 1) seek(chapter * chapterFrames);
   });
   // Horizontal dragging steps the same decoded frame for all seven hands.
   strip.addEventListener('pointerdown', e => {
@@ -122,7 +95,7 @@ function setupComparison() {
       if (Math.abs(dx) < 5 || Math.abs(dx) < Math.abs(e.clientY-drag.y)) return;
       strip.setPointerCapture(e.pointerId);
     }
-    seek(drag.frame + Math.round(dx*chapterFrames/strip.clientWidth));
+    seek(drag.frame + Math.round(dx*last/strip.clientWidth));
   });
   ['pointerup','pointercancel','lostpointercapture'].forEach(event => strip.addEventListener(event, () => { drag=null; }));
   strip.addEventListener('pointerleave', e => { if (!strip.hasPointerCapture(e.pointerId)) drag=null; });
@@ -131,18 +104,14 @@ function setupComparison() {
   function enable() {
     if (video.readyState < 2 || !view.hidden || !video.paused) return;
     draw(video.currentTime);
-    view.hidden = byId('baseline-video').hidden = false; video.hidden = true;
-    const chapter = linkedChapter();
-    if (chapter >= 0) {
-      seek(chapter * chapterFrames);
-      tabs[chapter].scrollIntoView({block:'center'});
-    }
+    view.hidden = false;
+    video.hidden = true;
   }
   video.addEventListener('loadeddata',enable);
-  video.addEventListener('error',() => { video.hidden=false; view.hidden=byId('baseline-video').hidden=true; });
+  video.addEventListener('error',() => { video.hidden=false; view.hidden=true; });
   enable();
 }
-setupComparison();
+document.querySelectorAll('section.comparison').forEach(setupComparison);
 
 const copyCitation = byId('copy-citation');
 if (navigator.clipboard) {

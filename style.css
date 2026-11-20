@@ -35,7 +35,7 @@ h1 strong { display: table; margin: auto; padding-inline: .08em; font-size: clam
 .authors sup, .corresponding sup { font-size: .72em; }
 .affiliation { font-size: 1rem; }
 .corresponding, #availability { font-size: .82rem; color: var(--muted); }
-.resources, .action-choices { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; }
+.resources { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; }
 .resources { gap: .4rem; margin: 1rem auto .25rem; }
 .resources a { color: #333a40; background: #f0f2f4; border: 1px solid #dde1e4; border-radius: 18px; padding: .23rem .84rem; font-size: .9rem; line-height: 1.5; font-weight: 550; }
 .paper-figure { margin-inline: auto; }
@@ -50,9 +50,6 @@ h1 strong { display: table; margin: auto; padding-inline: .08em; font-size: clam
 h2 { margin-bottom: 1.5rem; text-align: center; font-size: clamp(1.85rem,3vw,2.3rem); font-weight: 650; line-height: 1.2; letter-spacing: -.04em; }
 .prose { max-width: 46rem; margin-inline: auto; }
 .prose p + p { margin-top: .8rem; }
-.action-choices { gap: .3rem 1rem; margin: 0 auto 1.1rem; }
-.action-choices button { border: 0; border-bottom: 2px solid transparent; padding: .2rem .1rem; font-size: .97rem; color: var(--muted); background: white; }
-.action-choices button[aria-pressed=true] { color: var(--ink); border-color: var(--blue); font-weight: 650; }
 video { display: block; width: 100%; height: auto; background: white; }
 video[hidden] { display: none; }
 #video { max-width: 60rem; }
@@ -112,7 +109,6 @@ dialog::backdrop { background: rgb(19 28 35 / 70%); }
   .resources { gap: .25rem; }
   .resources a { padding: .2rem .55rem; font-size: .84rem; }
   .frames { grid-template-columns: repeat(2,minmax(0,1fr)); }
-  .action-choices { gap: .2rem .68rem; }
   .paper-figure figcaption { display: block; }
   .paper-figure figcaption a { margin-left: .3rem; }
   #figure-3 { margin-top: 2rem; }
@@ -125,8 +121,6 @@ dialog::backdrop { background: rgb(19 28 35 / 70%); }
 @media (forced-colors: active) { h1 strong { color: CanvasText; } }
 
 #motion-film { width: 100%; }
-#baseline-video[hidden] { display: none; }
-#baseline-video { gap: .2rem 1.25rem; }
 .frames { padding: 1rem 0 .45rem; cursor: ew-resize; touch-action: pan-y pinch-zoom; user-select: none; }
 .frames figcaption { line-height: 1.4; }
 .transport { max-width: 29rem; gap: .85rem; }
@@ -140,22 +134,21 @@ dialog::backdrop { background: rgb(19 28 35 / 70%); }
 .transport button:disabled { opacity: .5; cursor: default; }
 .transport input { height: 2.75rem; margin: 0; cursor: pointer; }
 .transport output { min-width: 4.9rem; font-size: .84rem; color: var(--muted); font-variant-numeric: tabular-nums; text-align: right; }
-.comparison .media-error { text-align: center; font-size: .9rem; }
 @media (max-width: 600px) {
   #motion-film { aspect-ratio: 1064 / 1008; }
-  #baseline-video { gap: 0 .85rem; }
-  .action-choices button { min-height: 2.75rem; }
 }
 @media (max-width: 480px) {
-  #hand-view:not([hidden]) { display: flex; flex-direction: column; }
+  .hand-view:not([hidden]) { display: flex; flex-direction: column; }
   .comparison .transport { order: 0; width: 100%; margin: 0 auto .5rem; }
-  #hand-view .frames { order: 1; }
-  #hand-view #comparison-scene { order: -1; }
+  .hand-view .frames { order: 1; }
   .frames figure:last-child { grid-column: 1 / -1; width: 50%; justify-self: center; }
 }
 
-#comparison-scene { text-align: center; font-size: .98rem; color: var(--text); margin: 0 auto .75rem; }
-#baseline-video { margin-bottom: .7rem; }
+.comparison { scroll-margin-top: 1.5rem; }
+.comparison + .comparison { margin-top: clamp(2.4rem, 5vw, 3.6rem); }
+.comparison h3 { text-align: center; font-size: clamp(1.22rem, 2.3vw, 1.48rem); font-weight: 620; line-height: 1.25; letter-spacing: -.025em; }
+.comparison-scene { text-align: center; font-size: .98rem; color: var(--muted); margin: .3rem auto 1rem; }
+.comparison-film-link { margin-top: 1.4rem; text-align: center; font-size: .9rem; }
 
 .transport select { font: inherit; font-size: .84rem; background: white; color: var(--muted); border: 1px solid var(--rule); border-radius: 4px; padding: .2rem .15rem; }
 .transport output { min-width: 5.4rem; }
