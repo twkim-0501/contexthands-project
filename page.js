@@ -1,29 +1,16 @@
 'use strict';
 
 const byId = id => document.getElementById(id);
-const asset = file => 'assets/' + file;
-
-const motionFilm = byId('motion-film');
-const compactMotion = matchMedia('(max-width: 600px)');
-function matchPoster() {
-  const mobile = motionFilm.currentSrc ? new URL(motionFilm.currentSrc).pathname.endsWith('motion-examples-mobile.mp4') : compactMotion.matches;
-  motionFilm.poster = asset(mobile ? 'motion-mobile-first.webp?v=contents43' : 'motion-examples-first.webp?v=contents43');
-}
-matchPoster();
-motionFilm.addEventListener('loadedmetadata', matchPoster);
-compactMotion.addEventListener('change', () => {
-  if (!motionFilm.currentSrc || new URL(motionFilm.currentSrc).pathname.endsWith('-mobile.mp4') === compactMotion.matches) return;
-  const time = motionFilm.currentTime, playing = !motionFilm.paused;
-  motionFilm.addEventListener('loadedmetadata', () => {
-    motionFilm.currentTime = time;
-    if (playing) motionFilm.play().catch(() => {});
-  }, {once: true});
-  motionFilm.load();
-});
-// Hand image bounds in the 1920 x 960 comparison film, in reading order.
-const handPanels = [
-  ['GT', 53, 94], ['ContextHands', 521, 94], ['BOTH2Hands', 989, 94], ['MDM', 1457, 94],
-  ['T2M-GPT', 287, 566], ['MLD', 755, 566], ['HandX', 1223, 566]
+// Crops in the synchronized 1920 × 1472 film. The two hand rows begin at y = 512.
+const rows = [
+  [
+    ['Reference', 34, 98, 495, 376, 'Side-camera view with recorded body, hands and objects'],
+    ['Inputs', 576, 264, 342, 231, 'Observed upper-body motion'],
+    ['GT', 976, 99, 435, 377, 'Both recorded hands and objects'],
+    ['ContextHands', 1445, 99, 435, 377, 'Both generated hands']
+  ],
+  [['GT', 53, 606], ['ContextHands', 521, 606], ['BOTH2Hands', 989, 606], ['MDM', 1457, 606]],
+  [['T2M-GPT', 287, 1078], ['MLD', 755, 1078], ['HandX', 1223, 1078]]
 ];
 
 function setupComparison(section) {
@@ -34,22 +21,48 @@ function setupComparison(section) {
   const strip = view.querySelector('.frames'), range = view.querySelector('input');
   const play = view.querySelector('button'), counter = view.querySelector('output');
   const speed = view.querySelector('select');
-  const width = 410, height = 370, fps = 30, frames = Number(section.dataset.frames);
+  const fps = 30, frames = Number(section.dataset.frames);
   const last = frames - 1;
   range.max = String(last);
   let callback, drag;
   play.setAttribute('aria-label', 'Play ' + title);
   range.setAttribute('aria-label', title + ' frame');
   speed.setAttribute('aria-label', title + ' playback speed');
-  const panels = handPanels.map(([name, x, y]) => {
-    const fig = document.createElement('figure'), caption = document.createElement('figcaption');
-    caption.textContent = name;
-    const canvas = document.createElement('canvas');
-    canvas.width = width; canvas.height = height;
-    canvas.setAttribute('role', 'img');
-    canvas.setAttribute('aria-label', name + ', ' + section.dataset.side + ' hand');
-    fig.append(caption, canvas); strip.append(fig);
-    return {canvas, x, y};
+  const cues = JSON.parse(section.querySelector('.instruction-cues').textContent);
+  const prompt = document.createElement('span'), scope = document.createElement('span');
+  let currentCue;
+  const panels = rows.flatMap((cells, rowIndex) => {
+    const row = document.createElement('div');
+    row.className = 'frame-row';
+    strip.append(row);
+    return cells.map(([name, x, y, width = 410, height = 370, description]) => {
+      const figure = document.createElement('figure'), caption = document.createElement('figcaption');
+      caption.textContent = name;
+      if (name === 'ContextHands') figure.className = 'ours-panel';
+      figure.append(caption);
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      canvas.setAttribute('role', 'img');
+      canvas.setAttribute('aria-label', description || name + ', ' + section.dataset.side + ' hand');
+      if (rowIndex === 0 && name === 'Inputs') {
+        figure.className = 'inputs-panel';
+        const text = document.createElement('div'), line = document.createElement('div');
+        const label = document.createElement('b'), body = document.createElement('b');
+        label.textContent = 'Text';
+        body.textContent = 'Body';
+        line.className = 'input-label';
+        line.append(label, scope);
+        text.className = 'input-prompt';
+        // Reserve space for this case's longest instruction while scrubbing.
+        text.dataset.longest = cues.reduce((a,c) => c.text.length > a.length ? c.text : a, '');
+        text.append(prompt);
+        figure.append(line, text, body);
+      }
+      figure.append(canvas);
+      row.append(figure);
+      return {canvas, x, y};
+    });
   });
   function position(frame) {
     range.value = frame;
@@ -58,8 +71,18 @@ function setupComparison(section) {
   }
   function draw(time) {
     if (video.readyState < 2 || video.seeking) return;
-    panels.forEach(({canvas,x,y}) => canvas.getContext('2d').drawImage(video,x,y,width,height,0,0,width,height));
-    position(Math.max(0, Math.min(last, Math.floor(time * fps + .0001))));
+    const frame = Math.max(0, Math.min(last, Math.floor(time * fps + .0001)));
+    for (const {canvas,x,y} of panels) {
+      const {width,height} = canvas;
+      canvas.getContext('2d').drawImage(video,x,y,width,height,0,0,width,height);
+    }
+    const cue = cues.find(c => frame < c.end);
+    if (cue !== currentCue) {
+      scope.textContent = cue.scope;
+      prompt.textContent = cue.text || '—';
+      currentCue = cue;
+    }
+    position(frame);
   }
   function seek(frame) {
     video.pause();
@@ -90,7 +113,7 @@ function setupComparison(section) {
     if (video.ended || Number(range.value) === last) seek(0);
     video.play().catch(transport);
   });
-  // Horizontal dragging steps the same decoded frame for all seven hands.
+  // Horizontal dragging steps the same decoded frame across all three rows.
   strip.addEventListener('pointerdown', e => {
     if (e.isPrimary && e.button === 0) drag = {id:e.pointerId,x:e.clientX,y:e.clientY,frame:Number(range.value)};
   });
@@ -114,6 +137,7 @@ function setupComparison(section) {
     video.hidden = true;
   }
   video.addEventListener('loadeddata',enable);
+  video.addEventListener('pause',enable);
   video.addEventListener('error',() => { video.hidden=false; view.hidden=true; });
   enable();
 }
