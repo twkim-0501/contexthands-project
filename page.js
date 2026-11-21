@@ -23,6 +23,8 @@ function setupComparison(section) {
   const speed = view.querySelector('select');
   const fps = 30, frames = Number(section.dataset.frames);
   const last = frames - 1;
+  const posterFrame = Number(section.dataset.posterFrame || 0);
+  let initialSeek = posterFrame > 0, showingPoster = initialSeek;
   range.max = String(last);
   let callback, drag;
   play.setAttribute('aria-label', 'Play ' + title);
@@ -85,6 +87,7 @@ function setupComparison(section) {
     position(frame);
   }
   function seek(frame) {
+    showingPoster = false;
     video.pause();
     const clamped = Math.max(0, Math.min(last,frame));
     position(clamped);
@@ -110,7 +113,7 @@ function setupComparison(section) {
   range.addEventListener('input', () => seek(Number(range.value)));
   play.addEventListener('click', () => {
     if (!video.paused) { video.pause(); return; }
-    if (video.ended || Number(range.value) === last) seek(0);
+    if (showingPoster || video.ended || Number(range.value) === last) seek(0);
     video.play().catch(transport);
   });
   // Horizontal dragging steps the same decoded frame across all three rows.
@@ -131,12 +134,18 @@ function setupComparison(section) {
   ['seeked','ended','pause'].forEach(event => video.addEventListener(event, () => draw(video.currentTime)));
   ['play','pause','ended'].forEach(event => video.addEventListener(event,transport));
   function enable() {
-    if (video.readyState < 2 || !view.hidden || !video.paused) return;
+    if (video.readyState < 2 || !view.hidden || !video.paused || video.seeking) return;
+    if (initialSeek) {
+      initialSeek = false;
+      video.currentTime = (posterFrame + .5) / fps;
+      return;
+    }
     draw(video.currentTime);
     view.hidden = false;
     video.hidden = true;
   }
   video.addEventListener('loadeddata',enable);
+  video.addEventListener('seeked',enable);
   video.addEventListener('pause',enable);
   video.addEventListener('error',() => { video.hidden=false; view.hidden=true; });
   enable();

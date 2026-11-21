@@ -71,7 +71,7 @@ video[hidden] { display: none; }
 .input-label { display: flex; gap: .15em .5em; flex-wrap: wrap; align-items: baseline; }
 .input-label span { color: var(--muted); font-size: .88em; }
 .input-prompt { display: grid; margin: .22em 0 .65em; }
-.input-prompt::before, .input-prompt span { grid-area: 1 / 1; }
+.input-prompt::before, .input-prompt span { grid-area: 1 / 1; white-space: pre-line; }
 .input-prompt::before { content: attr(data-longest); visibility: hidden; }
 .inputs-panel canvas { max-width: 8.75rem; }
 @media (max-width: 600px) {
@@ -151,6 +151,7 @@ dialog::backdrop { background: rgb(19 28 35 / 70%); }
 .transport output { min-width: 4.9rem; font-size: .84rem; color: var(--muted); font-variant-numeric: tabular-nums; text-align: right; }
 
 .comparison { scroll-margin-top: 1.5rem; }
+.comparison-tabs:not([hidden]) ~ .comparison { scroll-margin-top: 5.5rem; }
 .comparison-tabs:not([hidden]) { display: flex; justify-content: center; flex-wrap: wrap; gap: .2rem 1rem; margin: 0 auto .75rem; scroll-margin-top: 1.5rem; }
 .comparison-tabs button { border: 0; border-bottom: 2px solid transparent; padding: .42rem .1rem; font-size: .98rem; color: var(--muted); background: white; }
 .comparison-tabs [aria-selected=true] { color: #315f7c; border-color: var(--blue); font-weight: 650; }
